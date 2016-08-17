@@ -1,0 +1,648 @@
+<%@ page
+    import="
+            com.globalsight.everest.permission.Permission,
+            com.globalsight.everest.permission.PermissionSet,
+            com.globalsight.everest.util.system.SystemConfigParamNames,
+            com.globalsight.everest.util.system.SystemConfiguration,
+            com.globalsight.everest.webapp.javabean.NavigationBean,
+            com.globalsight.everest.webapp.WebAppConstants,
+            com.globalsight.everest.webapp.pagehandler.PageHandler,
+            com.globalsight.everest.webapp.webnavigation.LinkHelper,
+            com.globalsight.everest.webapp.pagehandler.administration.shutdown.ShutdownMainHandler,
+            com.globalsight.vignette.VignetteProperties,
+            com.globalsight.everest.webapp.pagehandler.administration.users.UserUtil,
+            com.globalsight.everest.company.CompanyWrapper,
+     		com.globalsight.everest.company.Company,
+            java.util.ResourceBundle"
+%>
+
+// NOTE: This file is included in every jsp
+
+<%@ include file="/envoy/common/installedModules.jspIncl" %>
+<%
+	boolean isEnablewfStatePosts = false;
+	Company curCompany = CompanyWrapper.getCurrentCompany();
+	isEnablewfStatePosts = curCompany.getEnableWorkflowStatePosts();
+    String gridAlignment = "LEFT";
+
+    ResourceBundle mainMenuBundle = PageHandler.getBundle(session);
+
+    PermissionSet userPerms = (PermissionSet) session.getAttribute( 
+                    WebAppConstants.PERMISSIONS);
+    boolean hasSetupMenu = false;
+    if (userPerms.getPermissionFor(Permission.COMPANY_VIEW) ||
+        userPerms.getPermissionFor(Permission.LOCALE_PAIRS_VIEW) ||
+        userPerms.getPermissionFor(Permission.ACTIVITY_TYPES_VIEW) ||
+        userPerms.getPermissionFor(Permission.CURRENCY_VIEW) || 
+        userPerms.getPermissionFor(Permission.RATES_VIEW) || 
+        userPerms.getPermissionFor(Permission.SYS_CAL_VIEW) || 
+        userPerms.getPermissionFor(Permission.USER_CAL_VIEW) || 
+        userPerms.getPermissionFor(Permission.HOLIDAY_VIEW) || 
+        userPerms.getPermissionFor(Permission.PERMGROUPS_VIEW) || 
+       (userPerms.getPermissionFor(Permission.USERS_VIEW) && 
+       (userPerms.getPermissionFor(Permission.USERS_EDIT) || 
+        userPerms.getPermissionFor(Permission.USERS_REMOVE) || 
+        userPerms.getPermissionFor(Permission.USERS_NEW))) || 
+        userPerms.getPermissionFor(Permission.TM_VIEW) || 
+        userPerms.getPermissionFor(Permission.TMP_VIEW) || 
+        userPerms.getPermissionFor(Permission.TERMINOLOGY_VIEW) || 
+        userPerms.getPermissionFor(Permission.PROJECTS_VIEW) || 
+        userPerms.getPermissionFor(Permission.WORKFLOWS_VIEW) || 
+        userPerms.getPermissionFor(Permission.LOCPROFILES_VIEW) || 
+        userPerms.getPermissionFor(Permission.SUPPORT_FILES_VIEW) ||
+        userPerms.getPermissionFor(Permission.CVS_Servers) ||
+        userPerms.getPermissionFor(Permission.CVS_MODULES) ||
+        userPerms.getPermissionFor(Permission.CVS_MODULE_MAPPING) ||
+        userPerms.getPermissionFor(Permission.CVS_FILE_PROFILES) ||
+        userPerms.getPermissionFor(Permission.ATTRIBUTE_VIEW) ||
+        userPerms.getPermissionFor(Permission.ATTRIBUTE_GROUP_VIEW) ||
+        userPerms.getPermissionFor(Permission.LOGS_VIEW) ||
+        userPerms.getPermissionFor(Permission.OPERATION_LOG_VIEW))
+            hasSetupMenu = true;
+
+    boolean hasDataSourceMenu = false;
+    if (userPerms.getPermissionFor(Permission.FILE_PROFILES_VIEW) ||
+        userPerms.getPermissionFor(Permission.FILE_EXT_VIEW) || 
+        userPerms.getPermissionFor(Permission.XMLRULE_VIEW) ||
+        userPerms.getPermissionFor(Permission.SEGMENTATIONRULE_VIEW) || 
+        userPerms.getPermissionFor(Permission.EXPORT_LOC_VIEW) || 
+        userPerms.getPermissionFor(Permission.CREATE_JOB_NO_APPLET) ||
+        userPerms.getPermissionFor(Permission.ELOQUA) ||
+        userPerms.getPermissionFor(Permission.GIT_CONNECTOR))
+            hasDataSourceMenu = true;
+
+    boolean hasGuidesMenu = false;
+    if (userPerms.getPermissionFor(Permission.LOCALE_PAIRS_VIEW) &&
+        userPerms.getPermissionFor(Permission.ACTIVITY_TYPES_VIEW) && 
+        userPerms.getPermissionFor(Permission.PERMGROUPS_VIEW) && 
+       (userPerms.getPermissionFor(Permission.USERS_VIEW) && 
+       (userPerms.getPermissionFor(Permission.USERS_EDIT) || 
+        userPerms.getPermissionFor(Permission.USERS_REMOVE) || 
+        userPerms.getPermissionFor(Permission.USERS_NEW))) && 
+        userPerms.getPermissionFor(Permission.TM_VIEW) && 
+        userPerms.getPermissionFor(Permission.TMP_VIEW) && 
+        userPerms.getPermissionFor(Permission.TERMINOLOGY_VIEW) && 
+        userPerms.getPermissionFor(Permission.PROJECTS_VIEW) && 
+        userPerms.getPermissionFor(Permission.WORKFLOWS_VIEW) && 
+        userPerms.getPermissionFor(Permission.LOCPROFILES_VIEW))
+            hasGuidesMenu = true;
+
+    boolean hasMyJobsMenu = false;
+    if (userPerms.getPermissionFor(Permission.JOBS_VIEW) ||
+        userPerms.getPermissionFor(Permission.JOBS_GROUP))
+        hasMyJobsMenu = true;
+
+    boolean hasMyActivitiesMenu = false;
+    if (userPerms.getPermissionFor(Permission.ACTIVITIES_VIEW))
+        hasMyActivitiesMenu = true;
+        
+    boolean hasTMTBSearchMenu = false;
+    if(userPerms.getPermissionFor(Permission.ACTIVITIES_TM_SEARCH)
+        ||userPerms.getPermissionFor(Permission.ACTIVITIES_TB_SEARCH))
+        hasTMTBSearchMenu = true;
+
+    boolean hasReportsMenu = false;
+    if (userPerms.getPermissionFor(Permission.REPORTS_MAIN) ||
+        userPerms.getPermissionFor(Permission.REPORTS_CUSTOM_EXTERNAL))
+        hasReportsMenu = true;
+
+    boolean hasVendorMenu = false;
+    if (userPerms.getPermissionFor(Permission.VENDORS_VIEW) ||
+        userPerms.getPermissionFor(Permission.VENDORS_CUSTOMFORM))
+        hasVendorMenu = true;
+
+    boolean hasContentManagerMenu = false;
+    if (userPerms.getPermissionFor(Permission.CONTENT_MANAGER))
+        hasContentManagerMenu = true;
+
+   //URL of the menu items
+   String homeURL = LinkHelper.getSystemHomeURL(request);
+   String companyUrl = LinkHelper.getWebActivityURL(request, "companies");
+   String attributeUrl = LinkHelper.getWebActivityURL(request, "attributeDefine");
+   String attributeGroupUrl = LinkHelper.getWebActivityURL(request, "attributeGroups");
+   String activityTypesUrl = LinkHelper.getWebActivityURL(request, "activities");
+   String archivedJobsUrl = LinkHelper.getWebActivityURL(request, "archive");
+   String calendarsUrl = LinkHelper.getWebActivityURL(request, "calendars");
+   String currencyUrl = LinkHelper.getWebActivityURL(request, "currency");
+   String customUrl = LinkHelper.getWebActivityURL(request, "customPage");
+   String customerJobsUrl = LinkHelper.getWebActivityURL(request, "customerJobs");
+   String dbConnectionsUrl = LinkHelper.getWebActivityURL(request, "dbconnections");
+   String dbImportSettingsUrl = LinkHelper.getWebActivityURL(request, "dbimportsettings");
+   String dbPreviewRulesUrl = LinkHelper.getWebActivityURL(request, "dynamicURLs");
+   String dbProfilesUrl = LinkHelper.getWebActivityURL(request, "dbprofiles");
+   String exportLocationsUrl = LinkHelper.getWebActivityURL(request, "exportlocation");
+   String fileExtensionsUrl = LinkHelper.getWebActivityURL(request, "fileextensions");
+   
+   String filterConfigurationUrl = LinkHelper.getWebActivityURL(request, "filterConfiguration");
+   
+   String fileProfilesUrl = LinkHelper.getWebActivityURL(request, "fileprofiles");
+   String glossariesUrl = LinkHelper.getWebActivityURL(request, "glossaries");
+   String serviceWareUrl = LinkHelper.getWebActivityURL(request,"swimport");
+   String locProfilesUrl = LinkHelper.getWebActivityURL(request, "locprofiles");
+   String localePairsUrl = LinkHelper.getWebActivityURL(request, "locales");
+   //String logoutUrl = LinkHelper.getWebActivityURL(request, "login");
+   String logsUrl = LinkHelper.getWebActivityURL(request, "viewLogs");
+   String operationLogUrl = LinkHelper.getWebActivityURL(request, "operationLog");
+   String myActivitiesUrl = LinkHelper.getWebActivityURL(request, "myactivities");
+   String simpleOfflineUploadUrl = LinkHelper.getWebActivityURL(request, "simpleofflineupload");
+   String myJobsUrl = LinkHelper.getWebActivityURL(request, "workflows");
+   String permissionGroupsUrl = LinkHelper.getWebActivityURL(request, "permissions");
+   String projectsUrl = LinkHelper.getWebActivityURL(request, "projects");
+   String rateUrl = LinkHelper.getWebActivityURL(request, "rate");
+   String reportsUrl = LinkHelper.getWebActivityURL(request, "reports");  
+   String shutdownUrl = LinkHelper.getWebActivityURL(request, "shutdown");
+   String systemActivitiesUrl = LinkHelper.getWebActivityURL(request, "jobCreationStatus");
+   String cvsServerUrl = LinkHelper.getWebActivityURL(request, "cvsserver");
+   String cvsModuleUrl = LinkHelper.getWebActivityURL(request, "cvsmodule");
+   String cvsModuleMappingUrl = LinkHelper.getWebActivityURL(request, "moduleMapping");
+   String cvsFileProfileUrl = LinkHelper.getWebActivityURL(request, "cvsfileprofile");
+   String cvsJobUrl = LinkHelper.getWebActivityURL(request, "cvsjob");
+   String gitconnectorUrl = LinkHelper.getWebActivityURL(request, "gitconnector");
+   String blaiseConnectorUrl = LinkHelper.getWebActivityURL(request, "blaiseConnector");
+   String createZipJobUrl = LinkHelper.getWebActivityURL(request, "createZipJobs");
+   String createCotiJobUrl = LinkHelper.getWebActivityURL(request, "cotiJobs");
+   String eloquaUrl = LinkHelper.getWebActivityURL(request, "eloqua");
+   String mindtouchUrl = LinkHelper.getWebActivityURL(request, "mindtouch");
+   String systemParametersUrl = LinkHelper.getWebActivityURL(request, "configuration");
+   String adminSystemParametersUrl = LinkHelper.getWebActivityURL(request, "adminConfiguration");
+   String remoteIpUrl = LinkHelper.getWebActivityURL(request, "remoteIpConfiguration");
+   String uiLocaleUrl = LinkHelper.getWebActivityURL(request, "uiLocaleConfiguration");
+   String templatesUrl = LinkHelper.getWebActivityURL(request, "templates");
+   String workflowStatePostUrl = LinkHelper.getWebActivityURL(request, "workflowStatePost");
+   String terminologyUrl = LinkHelper.getWebActivityURL(request, "termbases");
+   String tmUrl = LinkHelper.getWebActivityURL(request, "tm");
+   String usersUrl = LinkHelper.getWebActivityURL(request, "users");
+   String vmUrl = LinkHelper.getWebActivityURL(request, "vendors");
+   String vmSearchUrl = LinkHelper.getWebActivityURL(request, "vendorSearch");
+   String xmlRulesUrl = LinkHelper.getWebActivityURL(request, "xmlrules");
+   String xmlDtdsUrl = LinkHelper.getWebActivityURL(request, "xmldtds");
+   String segmentationRulesUrl = LinkHelper.getWebActivityURL(request, "segmentationrules");
+   String jobsSearchUrl = LinkHelper.getWebActivityURL(request, "jobsAll");
+   String jobGroupsUrl = LinkHelper.getWebActivityURL(request,"jobGroups");
+   String tasksSearchUrl = LinkHelper.getWebActivityURL(request, "myactivities");
+   String tmProfilesUrl = LinkHelper.getWebActivityURL(request,"tmProfiles");
+   String mtProfilesUrl = LinkHelper.getWebActivityURL(request,"mtProfiles");
+   String tmSearchUrl = homeURL+"linkName=tmSearch&pageName=TM&action=tmSearchPage";
+   String tbSearchUrl = homeURL+"linkName=termSearch&pageName=TB1&action=termSearch";
+   //this URL is not served by the ControlServlet. It is an external link
+   String vignetteUrl = "";
+   try 
+   {
+      VignetteProperties vp = VignetteProperties.getInstance();
+      vignetteUrl = vp.uiURL;
+   }
+   catch (Exception e) {}
+   
+   //It's a very ugly implementation for multicompany prototype. Modify it in real version.
+   boolean isSuperAdmin3 = UserUtil.isSuperAdmin(
+        (String) request.getSession().getAttribute(WebAppConstants.USER_NAME));
+        
+   boolean isAdmin3 = UserUtil.isInPermissionGroup(
+   (String) request.getSession().getAttribute(WebAppConstants.USER_NAME), "Administrator");
+   
+    boolean isSuperProjectManager3 = UserUtil.isSuperPM(
+        (String) request.getSession().getAttribute(WebAppConstants.USER_NAME));
+        
+     boolean isProjectManager3 = userPerms.getPermissionFor(Permission.PROJECTS_MANAGE);
+%>
+
+
+
+
+
+<!--DIV ID="navigation" STYLE=" POSITION: ABSOLUTE; Z-INDEX: 10; TOP: 68px; LEFT: 0px;"-->
+
+
+<link type="text/css" rel="StyleSheet" href="/globalsight/includes/menu/skins/system4.jsp" />
+<style type="text/css">
+
+
+.warning {
+	color:	red;
+}
+
+</style>
+<SCRIPT type="text/javascript">
+   var windownum = 1;
+   function reportPopup(url, target)
+   {
+      target = target + parent.windx + windownum++;
+      parent.windx++;
+      var newurl = url+'&target=' + target; 
+      window.open(newurl,target,config='height=500,width=700,toolbar=no,menubar=no,scrollbars=yes,resizable=yes,location=no,directories=no,status=no');
+   };
+
+   function newWindow(url, target)
+   {
+      target = target + parent.windx + windownum++;
+      parent.windx++;
+      window.open(url,target);
+   };
+
+    function goToUrl(url)
+    {
+        if (confirmJump())
+        {
+            document.location.href = url;
+            return true;
+        }
+        
+        //return false;
+    };
+    
+    function helpSwitch() 
+	{  
+  		// The variable helpFile must be defined in each JSP.
+  		helpWindow = window.open(helpFile, 'helpWindow',
+    		'resizable=yes,scrollbars=yes,WIDTH=730,HEIGHT=400');
+  		helpWindow.focus();
+	}
+
+</SCRIPT>
+
+
+<script type="text/javascript">
+
+var ie55 = /MSIE ((5\.[56789])|([6789]))/.test( navigator.userAgent ) &&
+			navigator.platform == "Win32";
+
+if ( !ie55 ) {
+	window.onerror = function () {
+		return true;
+	};
+}
+
+function writeNotSupported() {
+	//if ( !ie55 ) {
+		//document.write( "<p class=\"warning\">" +
+                        //"<%=mainMenuBundle.getString("jsmsg_nav_menu_warning")%>" +
+                        //"</p>" );
+	//}
+}
+
+</script>
+
+<link type="text/css" rel="StyleSheet" href="/globalsight/includes/menu/skins/xmenu.jsp" />
+<script type="text/javascript" src="/globalsight/includes/menu/js/xmenu.js"></script>
+<script type="text/javascript" src="/globalsight/includes/menu/js/cssexpr.js"></script>
+<script type="text/javascript">
+webfxMenuImagePath = "/globalsight/includes/menu/images/";
+
+//////////////// setUp menu ///////////////////
+<% if (hasSetupMenu) { %>
+var setUpMenu = new WebFXMenu;
+
+<% if (userPerms.getPermissionFor(Permission.COMPANY_VIEW) && isSuperAdmin3) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_companies")%>", "javascript:goToUrl('<%=companyUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.ATTRIBUTE_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_define_attribute")%>", "javascript:goToUrl('<%=attributeUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.ATTRIBUTE_GROUP_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_attribute_groups")%>", "javascript:goToUrl('<%=attributeGroupUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.LOCALE_PAIRS_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_locale_pairs")%>", "javascript:goToUrl('<%=localePairsUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.ACTIVITY_TYPES_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_activity_types")%>", "javascript:goToUrl('<%=activityTypesUrl%>');", ""));
+<% } %>
+
+<% if(b_costing) { %>
+<% if (userPerms.getPermissionFor(Permission.CURRENCY_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_currency")%>", "javascript:goToUrl('<%=currencyUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.RATES_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_rates")%>", "javascript:goToUrl('<%=rateUrl%>');", ""));
+<% } %>
+<%}%>
+
+<% if (b_calendaring) { %>
+<% if (userPerms.getPermissionFor(Permission.SYS_CAL_VIEW) ||
+    userPerms.getPermissionFor(Permission.USER_CAL_VIEW) ||
+    userPerms.getPermissionFor(Permission.HOLIDAY_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_calendars_holidays")%>", "javascript:goToUrl('<%=calendarsUrl%>');", ""));
+<% } %>
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.PERMGROUPS_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_permission_groups")%>", "javascript:goToUrl('<%=permissionGroupsUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.USERS_VIEW) && (userPerms.getPermissionFor(Permission.USERS_EDIT) || 
+        userPerms.getPermissionFor(Permission.USERS_REMOVE) || userPerms.getPermissionFor(Permission.USERS_NEW) ||
+        userPerms.getPermissionFor(Permission.USERS_IMPORT) || userPerms.getPermissionFor(Permission.USERS_EXPORT) )) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_users")%>", "javascript:goToUrl('<%=usersUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.TM_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_tm")%>", "javascript:goToUrl('<%=tmUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.TMP_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_tm_profiles")%>", "javascript:goToUrl('<%=tmProfilesUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.MTP_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_mt_profiles")%>", "javascript:goToUrl('<%=mtProfilesUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.TERMINOLOGY_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_terminology")%>", "javascript:goToUrl('<%=terminologyUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.PROJECTS_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_projects")%>", "javascript:goToUrl('<%=projectsUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.WORKFLOWS_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_workflows")%>", "javascript:goToUrl('<%=templatesUrl%>');", ""));
+<% } %>
+<%if(isEnablewfStatePosts && (isSuperAdmin3 || isAdmin3  || isSuperProjectManager3 || isProjectManager3)){%>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_workflow_state_post_profiles")%>", "javascript:goToUrl('<%=workflowStatePostUrl%>');", ""));
+<%}%>
+<% if (userPerms.getPermissionFor(Permission.LOCPROFILES_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_loc_profiles")%>", "javascript:goToUrl('<%=locProfilesUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.SUPPORT_FILES_VIEW)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_supportFiles")%>", "javascript:goToUrl('<%=glossariesUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.CVS_Servers)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_cvsservers")%>", "javascript:goToUrl('<%=cvsServerUrl%>');", ""));
+<%}%>
+<% if (userPerms.getPermissionFor(Permission.CVS_MODULES)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_cvsmodules")%>", "javascript:goToUrl('<%=cvsModuleUrl%>');", ""));
+<%}%>
+<% if (userPerms.getPermissionFor(Permission.CVS_MODULE_MAPPING)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_cvs_module_mappings")%>", "javascript:goToUrl('<%=cvsModuleMappingUrl%>');", ""));
+<%}%>
+<% if (userPerms.getPermissionFor(Permission.CVS_FILE_PROFILES)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_cvs_file_profiles")%>", "javascript:goToUrl('<%=cvsFileProfileUrl%>');", ""));
+<%}%>
+
+
+<% if (userPerms.getPermissionFor(Permission.SYSTEM_PARAMS) && isSuperAdmin3) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_system_parameters")%>", "javascript:goToUrl('<%=systemParametersUrl%>');", ""));
+<%}%>
+
+<% if (userPerms.getPermissionFor(Permission.SYSTEM_PARAMS) && isSuperAdmin3) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_admin_system_parameters")%>", "javascript:goToUrl('<%=adminSystemParametersUrl%>');", ""));
+<%}%>
+
+<% if (userPerms.getPermissionFor(Permission.UILOCALE_VIEW) && isSuperAdmin3) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_uilocale_title")%>", "javascript:goToUrl('<%=uiLocaleUrl%>');", ""));
+<%}%>
+
+<% if (userPerms.getPermissionFor(Permission.SYSTEM_PARAMS) && isSuperAdmin3) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_remote_ip_webservices")%>", "javascript:goToUrl('<%=remoteIpUrl%>');", ""));
+<%}%>
+
+<% if (userPerms.getPermissionFor(Permission.LOGS_VIEW) && isSuperAdmin3) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_logs")%>", "javascript:goToUrl('<%=logsUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.OPERATION_LOG_VIEW) && isSuperAdmin3) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_logs_operation")%>", "javascript:goToUrl('<%=operationLogUrl%>');", ""));
+<% } %>
+
+<% if (ShutdownMainHandler.shutdownUserInterfaceEnabled() && isSuperAdmin3) { %>
+<% if (userPerms.getPermissionFor(Permission.SHUTDOWN_SYSTEM)) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_shutdown")%>", "javascript:goToUrl('<%=shutdownUrl%>');", ""));
+<% } %>
+<% } %>
+
+<% if (isSuperAdmin3) { %>
+setUpMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_system_activities")%>", "javascript:goToUrl('<%=systemActivitiesUrl%>');", ""));
+<% } %>
+<% } //end if hasSetupMenu %>
+
+//////////////// DataSource menu ///////////////////
+<% if (hasDataSourceMenu) { %>
+var dataSourcesMenu = new WebFXMenu;
+
+<% if (userPerms.getPermissionFor(Permission.FILE_PROFILES_VIEW)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_file_profiles")%>", "javascript:goToUrl('<%=fileProfilesUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.FILTER_CONFIGURATION_VIEW)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_filter_configuration")%>", "javascript:goToUrl('<%=filterConfigurationUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.FILE_EXT_VIEW)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_file_extensions")%>", "javascript:goToUrl('<%=fileExtensionsUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.XMLRULE_VIEW)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_xml_rules")%>", "javascript:goToUrl('<%=xmlRulesUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.XMLDTD_VIEW)) { %>
+dataSourcesMenu.add(tmp = new WebFXMenuItem("<%=mainMenuBundle.getString("lb_xml_dtds")%>", "javascript:goToUrl('<%=xmlDtdsUrl%>');", ""));
+tmp.mnemonic = 'd';
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.SEGMENTATIONRULE_VIEW)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_segmentation_rules")%>", "javascript:goToUrl('<%=segmentationRulesUrl%>');", ""));
+<% } %>
+
+<% if (b_serviceware) {%>
+<% if (userPerms.getPermissionFor(Permission.SERVICEWARE_IMPORT)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_serviceware_import")%>", "javascript:goToUrl('<%=serviceWareUrl%>');", ""));
+<% } %>
+<% } %>
+
+<%if (b_database){%>
+<% if (userPerms.getPermissionFor(Permission.DATABASE_INTEGRATION)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_db_connections2")%>", "javascript:goToUrl('<%=dbConnectionsUrl%>');", ""));
+
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_db_profiles2")%>", "javascript:goToUrl('<%=dbProfilesUrl%>');", ""));
+
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_db_import_settings2")%>", "javascript:goToUrl('<%=dbImportSettingsUrl%>');", ""));
+
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_db_preview")%>", "javascript:goToUrl('<%=dbPreviewRulesUrl%>');", ""));
+
+<%}%>
+<%}%>
+
+<%if (b_vignette){%>
+<% if (userPerms.getPermissionFor(Permission.VIGNETTE_IMPORT)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_vignette_import")%>", "javascript:window.open('<%= vignetteUrl %>','vignetteWindow');", ""));
+<% } %>
+<%}%>
+
+<% if (b_documentum){%>
+<% if (userPerms.getPermissionFor(Permission.DOCUMENTUM_IMPORT)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("Documentum Import", "javascript:window.open('/globalsight/envoy/documentum/index.jsp','DocumentumWindow','HEIGHT=600,WIDTH=1000,scrollbars,resizable');", ""));
+<%}%>
+<%}%>
+
+<% if (userPerms.getPermissionFor(Permission.EXPORT_LOC_VIEW)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_export_locations")%>", "javascript:goToUrl('<%=exportLocationsUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.CVS_OPERATE)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_cvs_job")%>", "javascript:goToUrl('<%=cvsJobUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.CREATE_JOB_NO_APPLET)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_create_job_without_java")%>", "javascript:goToUrl('<%=createZipJobUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.COTI_JOB)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_coti_job")%>", "javascript:goToUrl('<%=createCotiJobUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.ELOQUA)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_eloqua")%>", "javascript:goToUrl('<%=eloquaUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.GIT_CONNECTOR)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_git_connector")%>", "javascript:goToUrl('<%=gitconnectorUrl%>');", ""));
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.BLAISE_CONNECTOR)) { %>
+dataSourcesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_blaise_connector")%>", "javascript:goToUrl('<%=blaiseConnectorUrl%>');", ""));
+<% } %>
+
+<% } //end if hasDataSourceMenu %>
+
+//////////////// Guides menu ///////////////////
+<%if (hasGuidesMenu){%>
+var guidesMenu = new WebFXMenu;
+
+guidesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_filesystem")%>", "javascript:showGuide('fileSystem');", ""));
+
+<%if (b_database) {%>
+<% if (userPerms.getPermissionFor(Permission.DATABASE_INTEGRATION)) { %>
+guidesMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_database")%>", "javascript:showGuide('database');", ""));
+
+<%}%>
+<%}%>
+<% } // end hasGuidesMenu %> 
+
+
+<% if (hasMyJobsMenu) { %>
+<%@ include file="/envoy/common/jobsMenu.jspIncl" %>
+<%}%>
+
+<% if (hasMyActivitiesMenu) { %>
+<%@ include file="/envoy/common/activitiesMenu.jspIncl" %>
+<%}%>
+
+//////////////// Vendor Management menu ///////////////////
+<% if (b_vendorManagement) { %>
+<% if (hasVendorMenu) { %>
+var vmMenu = new WebFXMenu;
+<% if (userPerms.getPermissionFor(Permission.VENDORS_VIEW)) { %>
+vmMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_search_vendors")%>", "javascript:goToUrl('<%=vmSearchUrl%>');", ""));
+<% } %>
+<% if (userPerms.getPermissionFor(Permission.VENDORS_VIEW)) { %>
+vmMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_all_vendors")%>", "javascript:goToUrl('<%=vmUrl%>');", ""));
+<% } %>
+<% if (userPerms.getPermissionFor(Permission.VENDORS_CUSTOMFORM)) { %>
+vmMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_custom_page_designer")%>", "javascript:goToUrl('<%=customUrl%>');", ""));
+<% } %>
+<% } %>
+<% } //end if hasVendorMenu %>
+
+var menuBar = new WebFXMenuBar;
+var homeButton = new WebFXMenuItem("<%=mainMenuBundle.getString("lb_home")%>", "javascript:goToUrl('<%=homeURL%>');", "");
+menuBar.add(homeButton);
+
+<% if (hasSetupMenu) { %>
+var setUpButton = new WebFXMenuButton("<%=mainMenuBundle.getString("lb_setup")%>", null, "", setUpMenu);
+menuBar.add(setUpButton);
+<% } %>
+
+<% if (hasDataSourceMenu) { %>
+var dataSourcesButton = new WebFXMenuButton("<%=mainMenuBundle.getString("lb_data_sources")%>", null, "", dataSourcesMenu);
+menuBar.add(dataSourcesButton);
+<% } %>
+
+<%if (hasGuidesMenu){%>
+var guidesButton = new WebFXMenuButton("<%=mainMenuBundle.getString("lb_guides")%>", null, "", guidesMenu);
+menuBar.add(guidesButton);
+<% } %>
+
+<% if (hasMyJobsMenu) { %>
+var myJobsButton = new WebFXMenuButton("<%=mainMenuBundle.getString("lb_my_jobs")%>", null, "",  myJobsMenu);
+menuBar.add(myJobsButton);
+<% } %>
+
+<% if (hasMyActivitiesMenu) { %>
+var myActivitiesButton = new WebFXMenuButton("<%=mainMenuBundle.getString("lb_my_activities")%>", null, "",  myActivitiesMenu);
+menuBar.add(myActivitiesButton);
+<% } %>
+
+<% if (b_reports) { %>
+<% if (hasReportsMenu) { %>
+var reportsButton = new WebFXMenuItem("<%=mainMenuBundle.getString("lb_reports")%>", "javascript:goToUrl('<%=reportsUrl%>');", "");
+menuBar.add(reportsButton);
+<% } %>
+<%}%>
+
+<% if (b_vendorManagement) { %>
+<% if (hasVendorMenu) { %>
+var vmButton = new WebFXMenuButton("<%=mainMenuBundle.getString("lb_vendor_management")%>", null, "",  vmMenu);
+menuBar.add(vmButton);
+<% } %>
+<% } %>
+
+var docButton = new WebFXMenuItem("<%=mainMenuBundle.getString("lb_documentation")%>", "javascript:newWindow('http://www.globalsight.com/wiki/index.php/Main_Page', '_blank');", "");
+menuBar.add(docButton);
+
+var helpButton = new WebFXMenuItem("<%=mainMenuBundle.getString("lb_help")%>", "javascript:helpSwitch();", "");
+menuBar.add(helpButton);
+</script>
+
+<% if (hasContentManagerMenu) { %>
+<%@ include file="/envoy/common/cmsMenuOptions.jspIncl" %>
+<% } %>
+
+<DIV ID="navigation" STYLE=" POSITION: ABSOLUTE; Z-INDEX: 1000; TOP: 68px; LEFT: 0px; width:100%;">
+
+    <TABLE ID="navigationTable" WIDTH="100%" CELLPADDING="0" CELLSPACING="0" BORDER="0">
+        <TR CLASS="header2">
+            <TD HEIGHT="20">
+                <!-- Nav links table -->
+                <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0">
+                    <TR>
+                        <TD HEIGHT="20">
+							<script type="text/javascript">
+								var ua = navigator.userAgent;
+								var opera = /opera [56789]|opera\/[56789]/i.test(ua);
+								var ie = !opera && /msie [56789]/i.test(ua); 
+								
+								if (ie)
+								{
+								simplifyCSSExpression();
+								}						
+	                            
+	                            document.write(menuBar);
+                            </script>
+
+                            <script type="text/javascript">
+                                writeNotSupported();
+                            </script>
+                        </TD>
+                    </TR>
+                </TABLE>
+                <!-- End nav links table --></TD>
+
+            <TD HEIGHT="20" ALIGN="RIGHT"><A
+            CLASS="header2"
+            onClick="javascript:aboutWindow = window.open('/globalsight/envoy/about/about.jsp','About','HEIGHT=350,WIDTH=460,scrollbars,resizable=yes'); return(false);"
+            HREF="#"
+            TARGET="_top"><%= mainMenuBundle.getString("lb_about_system4") %></A>&nbsp;&nbsp;</TD>
+        </TR>
+    </TABLE>
+
+</DIV>
+

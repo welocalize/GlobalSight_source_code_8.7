@@ -1,0 +1,38 @@
+<!-- *************************************************************** -->
+<!-- *                                                             * -->
+<!-- *                   Install Build File                        * -->
+<!-- *                                                             * -->
+<!-- *************************************************************** -->
+
+<project name="GlobalSight" default="install" basedir=".">
+               
+  <target name="init">
+    <echo message="***** Install build file *****"/>
+    <tstamp/>
+    <property name="installdir" value="../install" />
+    <property name="compiledclasses" value="installcompiledclasses" />
+  </target>
+
+  <target name="install" depends="init">   
+    <mkdir dir="${compiledclasses}"/>
+    <javac
+			debug="on"
+			srcdir="${installdir}"
+			destdir="${compiledclasses}"
+			classpath="${classpath}" />
+    <copy todir="${compiledclasses}/data">
+         <fileset dir="${installdir}/data" includes="**.properties"/>
+    </copy>
+    <mkdir dir="${installclasses}"/>
+    <jar jarfile="${installclasses}/installer.jar"
+         basedir="${compiledclasses}"
+	     includes="**.class,installer/**.class,util/**.class,data/**.properties" />
+  </target>
+
+  <target name="clean" depends="init">
+    <delete dir="${installclasses}"/>
+    <delete dir="${compiledclasses}"/>
+  </target>
+  
+</project>
+

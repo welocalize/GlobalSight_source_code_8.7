@@ -1,0 +1,149 @@
+<project name="CAP" default="build_all">
+	<echo message="***** CAP build file *****" />
+	<property name="cap.srcBase" value="../../envoy/src" />
+	<property name="cap.javaSrcBase" value="${cap.srcBase}/java" />
+	<property name="cap.serverclassesDest" value="${serverclassesDest}" />
+	<property name="cap.createJobClasses" value="com/globalsight/everest" />
+	<property name="cap.UiWorkflowClasses" value="com/globalsight/everest" />
+	<property name="cap.UiWorkflowMisc" value="com/globalsight/util" />
+	<property name="cap.UiWorkflowLing" value="com/globalsight/ling" />
+	<property name="cap.webServiceClientClasses" value="com/globalsight/webservices/client2" />
+
+	<target name="prepare">
+		<copy tofile="${cap.serverclassesDest}/com/globalsight/resources/messages/LocaleResource.properties" file="${cap.javaSrcBase}/com/globalsight/resources/messages/LocaleResource_en_US.properties" />
+		<copy todir="${cap.serverclassesDest}/resources">
+			<fileset dir="${cap.javaSrcBase}/com/globalsight/everest/tm/util">
+				<include name="**/*.dtd" />
+			</fileset>
+		</copy>
+		<copy todir="${globalsight_home}/globalsight-web.war/resources">
+			<fileset dir="${cap.javaSrcBase}/com/globalsight/everest/tm/util">
+				<include name="tmx14.dtd" />
+				<include name="tmx-gs.dtd" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}/resources">
+			<fileset dir="${cap.javaSrcBase}/com/globalsight/terminology/importer">
+				<include name="**/*.dtd" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}/resources">
+			<fileset dir="${cap.javaSrcBase}/com/globalsight/everest/edit/offline/ttx">
+				<include name="**/*.ini" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}/resources">
+			<fileset dir="${cap.javaSrcBase}/com/globalsight/everest/edit/offline/download/omegat">
+				<include name="**/*.pdf" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}">
+			<fileset dir="${cap.javaSrcBase}">
+				<include name="**/*.properties" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}/properties">
+			<fileset dir="${cap.javaSrcBase}/com/globalsight/everest/edit/offline">
+				<include name="OfflineEditorConfig.properties" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}">
+			<fileset dir="${cap.javaSrcBase}">
+				<include name="com/globalsight/persistence/hibernate/xml/**/*.hbm.xml" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}">
+			<fileset dir="${cap.javaSrcBase}">
+				<include name="hibernate.properties.template" />
+				<include name="hibernate.cfg.xml" />
+				<include name="hibernate-jbpm.cfg.xml.template" />
+				<include name="jbpm.cfg.xml" />
+				<include name="quartz.properties.template" />
+				<include name="c3p0.properties" />
+				<include name="c3p0-config.xml" />
+				<include name="properties/envoy_generated.properties.template" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}">
+			<fileset dir="${cap.javaSrcBase}">
+				<include name="com/globalsight/everest/edit/offline/download/MSWord/TemplateRelease/AOR-Template.dot" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}">
+			<fileset dir="${cap.javaSrcBase}">
+				<include name="resources/*.xml" />
+			</fileset>
+		</copy>
+		<copy todir="${globalsight_home}/globalsight-web.war">
+			<fileset dir="${cap.srcBase}">
+				<include name="help/**/*" />
+				<include name="helptb/**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${globalsight_home}/globalsight-web.war/WEB-INF">
+			<fileset dir="${cap.srcBase}">
+				<include name="web.xml.template" />
+				<include name="server-config.wsdd" />
+			</fileset>
+		</copy>
+		<copy todir="${globalsight_home}/globalsight-web.war/WEB-INF/conf">
+			<fileset dir="${cap.srcBase}">
+				<include name="fop.xconf" />
+			</fileset>
+		</copy>
+		<copy todir="${globalsight_home}/globalsight-web.war/WEB-INF/tlds">
+			<fileset dir="${cap.javaSrcBase}/com/globalsight/everest/webapp/tags">
+				<include name="globalsight.tld" />
+				<include name="workflowStatusTag.tld" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}/com/globalsight/everest/webapp/applet/common">
+			<fileset dir="${cap.srcBase}/applet_images" />
+		</copy>
+		<copy todir="${globalsight_home}/globalsight-web.war">
+			<fileset dir="${cap.srcBase}">
+				<include name="includes/**/*" />
+				<include name="FCKeditor/**/*" />
+				<include name="dojo/**/*" />
+				<include name="dojox/**/*" />
+				<include name="dijit/**/*" />
+				<include name="jquery/**/*" />
+				<include name="images/**/*" />
+				<include name="reports/**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${globalsight_home}/globalsight-web.war">
+			<fileset dir="${cap.srcBase}/jsp" />
+		</copy>
+		<copy todir="${cap.serverclassesDest}/properties">
+			<fileset dir="${cap.javaSrcBase}/com/globalsight/everest/edit/offline">
+				<include name="OfflineEditorConfig.properties" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}">
+			<fileset dir="${cap.javaSrcBase}">
+				<include name="**/*_en.properties" />
+				<include name="**/*_en_US.properties" />
+				<include name="**/*_fr.properties" />
+				<include name="**/*_fr_FR.properties" />
+				<include name="**/*_es.properties" />
+				<include name="**/*_es_ES.properties" />
+				<include name="**/*_de.properties" />
+				<include name="**/*_de_DE.properties" />
+				<include name="**/*_ja.properties" />
+				<include name="**/*_ja_JP.properties" />
+			</fileset>
+		</copy>
+		<copy todir="${cap.serverclassesDest}/images">
+			<fileset dir="${cap.srcBase}/applet_images/images">
+				<include name="startNode.gif" />
+				<include name="moveUpArrow.gif" />
+				<include name="moveDownArrow.gif" />
+				<include name="graphicalworkflow/*.gif" />
+				<include name="exitNode.gif" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="build_all" depends="prepare" />
+</project>

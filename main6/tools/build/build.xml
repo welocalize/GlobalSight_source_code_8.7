@@ -1,0 +1,427 @@
+<project name="GlobalSight" default="all" basedir=".">
+
+	<!-- optional user-specified properties, eg gs.home -->
+	<property file="user.build.properties" />
+	<loadproperties srcFile="build.properties" />
+
+	<tstamp />
+
+	<target name="buildversion">
+		<mkdir dir="${serverclassesDest}" />
+		<!-- Create a BuildVersion.java which holds the current build version -->
+		<loadfile property="buildversion.java" srcFile="BuildVersion.java.template">
+			<filterchain>
+				<expandproperties />
+			</filterchain>
+		</loadfile>
+		<echo file="BuildVersion.java" message="${buildversion.java}" />
+		<copy todir="../../${envoySrcJava}/com/globalsight">
+			<fileset dir="." includes="BuildVersion.java">
+				<!-- Only copy the file when it changes. -->
+				<different targetdir="../../${envoySrcJava}/com/globalsight" ignoreFileTimes="true" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="distdir">
+		<mkdir dir="${dist}" />
+	</target>
+
+	<target name="compile" depends="buildversion">
+		<echo message="***** compile *****" />
+		<ant antfile="../../ling/build/build.xml" target="precompile">
+			<property name="classpath" value="${classpath}" />
+		</ant>
+		<echo message="***** compile : javac task *****" />
+		<javac nowarn="${nowarn}" includeantruntime="${includeantruntime}" encoding="ISO-8859-1" verbose="${javacverbose}" debug="on" classpath="${classpath}" srcdir="../../${envoySrcJava}:../../${diplomatDevSrcJava}:../../${lingSrcJava}" destdir="${serverclassesDest}" includes="**/*.java" excludes="test/**/*.java, tools/**/*.java" fork="true" memoryMaximumSize="512m">
+			<compilerarg value="-XDignore.symbol.file" />
+		</javac>
+	</target>
+
+	<target name="javadoc">
+		<javadoc encoding="ISO-8859-1" destdir="apidoc">
+			<packageset dir="../../${envoySrcJava}" />
+			<packageset dir="../../${diplomatDevSrcJava}" />
+			<packageset dir="../../${lingSrcJava}">
+				<exclude name="test/**" />
+				<exclude name="tools/**" />
+			</packageset>
+		</javadoc>
+	</target>
+
+	<target name="build-tests" depends="compile-tests, copy-test-files" />
+	<target name="compile-tests" depends="compile">
+		<mkdir dir="${testclasses}" />
+		<javac nowarn="${nowarn}" verbose="${javacverbose}" encoding="utf-8" debug="on" destdir="${testclasses}" classpath="${classpath}" source="${javacsource}" target="${javactarget}">
+			<src path="${testSrc}" />
+		</javac>
+	</target>
+	<target name="copy-test-files">
+		<copy todir="${testclasses}">
+			<fileset dir="${testSrc}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="build-ling-tests" depends="compile-ling-tests, copy-ling-test-files" />
+	<target name="compile-ling-tests" depends="compile">
+		<mkdir dir="${testclasses}" />
+		<javac nowarn="${nowarn}" verbose="${javacverbose}" encoding="ISO-8859-1" debug="on" destdir="${testclasses}" classpath="${classpath}" source="${javacsource}" target="${javactarget}">
+			<src path="../../${lingSrcJava}" />
+			<include name="test/globalsight/**/*.java" />
+		</javac>
+	</target>
+	<target name="copy-ling-test-files">
+		<copy todir="${testclasses}">
+			<fileset dir="../../${lingSrcJava}">
+				<include name="test/globalsight/**/*" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="build-hibernate-tests" depends="compile-hibernate-tests" />
+	<target name="compile-hibernate-tests" depends="compile">
+		<mkdir dir="${testclasses}" />
+		<javac nowarn="${nowarn}" verbose="${javacverbose}" encoding="ISO-8859-1" debug="on" destdir="${testclasses}" classpath="${classpath}" source="${javacsource}" target="${javactarget}">
+			<src path="../../envoy/hibernatetest/domain" />
+			<src path="../../envoy/hibernatetest/service" />
+		</javac>
+	</target>
+
+	<target name="ling">
+		<ant antfile="../../ling/build/build.xml" />
+	</target>
+
+	<target name="cap">
+		<ant antfile="../../envoy/src/build.xml" />
+	</target>
+
+	<target name="cxe">
+		<ant antfile="../../diplomat/build/build.xml" />
+	</target>
+
+	<target name="installer">
+		<ant antfile="../install/build.xml" />
+	</target>
+
+	<target name="copy">
+		<copy todir="${globalsight_home}/META-INF">
+			<fileset dir="${jbossUtilDir}">
+				<include name="jboss-deployment-structure.xml" />
+			</fileset>
+		</copy>
+		<copy todir="${globalsight_home}/globalsight-web.war/WEB-INF">
+			<fileset dir="${jbossUtilDir}">
+				<include name="jboss-web.xml" />
+			</fileset>
+		</copy>
+		<copy todir="${globalsight_home}/lib">
+			<fileset dir="${commonJarLib}" />
+		</copy>
+	</target>
+
+	<target name="all" depends="compile, ling, cap, cxe, copy" />
+
+	<!-- Jar up all GlobalSight classes into globalsight.jar -->
+	<target name="globalsight.jar" depends="compile">
+		<echo message="**** Creating globalsight.jar ****" />
+		<jar update="true" duplicate="preserve" filesonly="true" destfile="${globalsight_home}/lib/globalsight.jar">
+			<fileset dir="${serverclassesDest}" includes="**/*.class" excludes="com/globalsight/restful/version1_0/**/*.class" />
+		</jar>
+	</target>
+
+	<target name="restResources_1_0" depends="compile">
+		<echo message="**** Creating restResources_1_0.jar ****" />
+		<jar update="true" duplicate="preserve" filesonly="true" destfile="${globalsight_home}/lib/restResources_1_0.jar">
+			<fileset dir="${serverclassesDest}" includes="com/globalsight/restful/version1_0/**/*.class" />
+		</jar>
+	</target>
+
+	<target name="zip" depends="all, globalsight.jar, restResources_1_0, globalsightServices, installer, distdir">
+		<ant antfile="zip.xml" target="zip" />
+	</target>
+
+	<!-- Zip file for netegrity specific files -->
+	<target name="netegrity" depends="distdir">
+		<ant antfile="zip.xml" target="netegrity" />
+	</target>
+
+	<!-- Target to package the GS services -->
+	<target name="globalsightServices">
+		<ant dir="${globalsightServices}/" antfile="build.xml" target="build" inheritAll="false" />
+	</target>
+
+	<!-- Target for Desktop Icon in package-->
+	<target name="DesktopIconZip" depends="DesktopIcon">
+		<copy file="${desktopicon.dir}/build/DesktopIcon.zip" todir="${dist}" />
+	</target>
+
+	<!-- Target for webtop plug in package-->
+	<target name="WebtopZip" depends="Webtop">
+		<copy file="../../${diplomatDevSrcJava}/../webtop-plugin/dist/webtop-plug-in.zip" todir="${dist}" />
+	</target>
+
+	<target name="Webtop">
+		<echo message="../../${diplomatDevSrcJava}/../webtop-plugin" />
+		<ant dir="../../${diplomatDevSrcJava}/../webtop-plugin" antfile="build.xml" target="dist" inheritAll="false" />
+	</target>
+
+	<!-- Targets for linguistics tools -->
+	<target name="LingTools" depends="Debex, GAlign" />
+	<target name="LingToolsZip" depends="Debex, GAlign">
+		<!--<copy file="${lingtools}/debex/dist/debex.zip" todir="${dist}" />-->
+		<copy file="${lingtools}/galign/dist/galign-installer.zip" todir="${dist}" />
+	</target>
+
+	<target name="Debex">
+		<ant dir="${lingtools}/debex" antfile="build.xml" target="dist" inheritAll="false" />
+	</target>
+
+	<target name="GAlign">
+		<ant dir="${lingtools}/galign" antfile="build.xml" target="dist" inheritAll="false" />
+	</target>
+
+	<!-- Target to package Desktop Icon -->
+	<target name="DesktopIcon">
+		<ant dir="${desktopicon.dir}/tools" antfile="build.xml" target="make.package" />
+	</target>
+
+	<!-- Target to package all converters -->
+	<target name="AllConverters" depends="PdfConverter,WordConverter,ExcelConverter,PowerPointConverter,WordXPConverter,ExcelXPConverter,PowerPointXPConverter">
+		<echo message="**** Packaging all Converters ****" />
+	</target>
+
+	<target name="AllXPConverters" depends="WordXPConverter,ExcelXPConverter,PowerPointXPConverter">
+		<echo message="**** Packaging all Office XP Converters ****" />
+	</target>
+
+	<target name="All2003Converters" depends="Word2003Converter,Excel2003Converter,PowerPoint2003Converter">
+		<echo message="**** Packaging all Office 2003 Converters ****" />
+	</target>
+
+	<!-- GlobalSight Adobe Converter -->
+	<target name="AdobeConverter" depends="distdir">
+		<echo message="**** Packaging Adobe Converter ****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_adobe.zip">
+			<zipfileset dir="../../diplomat\dev\src\c-sharp\AdobeConverter\AdobeConverter\AdobeConverter\bin\Release" prefix="AdobeConverter" includes="*.exe,*.dll,*.pdb" excludes="AdobeConverter.vshost.exe" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight PDF Converter Service -->
+	<target name="PdfConverter" depends="distdir">
+		<echo message="***** GlobalSight PDF Converter *****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_pdf.zip">
+			<zipfileset dir="../../diplomat/dev/src/c-sharp/PdfConverter/PdfConverter/bin/Debug" prefix="globalsight/pdfconverter/bin" includes="PdfConverter.exe,*.dll" />
+			<zipfileset dir="../../tools/dotnet" prefix="globalsight/pdfconverter/bin" includes="reg.exe" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight Word Converter Service -->
+	<target name="WordConverter" depends="distdir">
+		<echo message="***** GlobalSight Word Converter *****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_word.zip">
+			<zipfileset dir="../../diplomat/dev/src/c-sharp/2000/WordConverter/WordConverter/bin/Debug" prefix="globalsight/wordconverter/bin" includes="*.exe,*.dll" />
+			<zipfileset dir="../../tools/dotnet" prefix="globalsight/wordconverter/bin" includes="reg.exe" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight Word XP Converter Service -->
+	<target name="WordXPConverter" depends="distdir">
+		<echo message="***** GlobalSight Word XP Converter *****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_wordxp.zip">
+			<zipfileset dir="../../diplomat/dev/src/c-sharp/XP/WordXPConverterSetup/Debug" prefix="" includes="*.*" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight Word 2003 Converter Service -->
+	<target name="Word2003Converter" depends="distdir">
+		<echo message="***** GlobalSight Word 2003 Converter *****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_word2003.zip">
+			<zipfileset dir="../../diplomat/dev/src/c-sharp/2003/Word2003ConverterSetup/Debug" prefix="" includes="*.*" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight Office 2007 Converter -->
+	<target name="Office2007Converter" depends="distdir">
+		<echo message="**** Packaging Office 2007 Converter ****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_office2007.zip">
+			<zipfileset dir="../../diplomat\dev\src\c-sharp\Office2007Converters\Office2007ConvertersSetup\Release" prefix="" includes="*.*" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight Office 2003 Converter -->
+	<target name="Office2003Converter" depends="distdir">
+		<echo message="**** Packaging Office 2003 Converter ****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_office2003.zip">
+			<zipfileset dir="../../diplomat\dev\src\c-sharp\Office2003Converters\Office2003ConvertersSetup\Release" prefix="" includes="*.*" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight PPT Converter Service -->
+	<target name="PowerPointConverter" depends="distdir">
+		<echo message="***** GlobalSight PowerPoint Converter *****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_powerpoint.zip">
+			<zipfileset dir="../../diplomat/dev/src/c-sharp/2000/PowerPointConverter/PowerPointConverter/bin/Debug" prefix="globalsight/powerpointconverter/bin" includes="*.exe,*.dll" />
+			<zipfileset dir="../../tools/dotnet" prefix="globalsight/powerpointconverter/bin" includes="reg.exe" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight PPT XP Converter Service -->
+	<target name="PowerPointXPConverter" depends="distdir">
+		<echo message="***** GlobalSight PowerPoint XP Converter *****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_powerpointxp.zip">
+			<zipfileset dir="../../diplomat/dev/src/c-sharp/XP/PowerPointXPConverterSetup/Debug" prefix="" includes="*.*" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight PPT 2003 Converter Service -->
+	<target name="PowerPoint2003Converter" depends="distdir">
+		<echo message="***** GlobalSight PowerPoint 2003 Converter *****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_powerpoint2003.zip">
+			<zipfileset dir="../../diplomat/dev/src/c-sharp/2003/PowerPoint2003ConverterSetup/Debug" prefix="" includes="*.*" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight Excel Converter Service -->
+	<target name="ExcelConverter" depends="distdir">
+		<echo message="***** GlobalSight Excel Converter *****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_excel.zip">
+			<zipfileset dir="../../diplomat/dev/src/c-sharp/2000/ExcelConverter/ExcelConverter/bin/Debug" prefix="globalsight/excelconverter/bin" includes="*.exe,*.dll" />
+			<zipfileset dir="../../tools/dotnet" prefix="globalsight/excelconverter/bin" includes="reg.exe" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight Excel XP Converter Service -->
+	<target name="ExcelXPConverter" depends="distdir">
+		<echo message="***** GlobalSight Excel XP Converter *****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_excelxp.zip">
+			<zipfileset dir="../../diplomat/dev/src/c-sharp/XP/ExcelXPConverterSetup/Debug" prefix="" includes="*.*" />
+		</zip>
+	</target>
+
+	<!-- GlobalSight Excel 2003 Converter Service -->
+	<target name="Excel2003Converter" depends="distdir">
+		<echo message="***** GlobalSight Excel 2003 Converter *****" />
+		<zip duplicate="preserve" zipfile="${converterdist}/conv_excel2003.zip">
+			<zipfileset dir="../../diplomat/dev/src/c-sharp/2003/Excel2003ConverterSetup/Debug" prefix="" includes="*.*" />
+		</zip>
+	</target>
+
+	<!-- Web Service Clients (Java and C#) -->
+	<!-- Both the C# and Java clients serve as examples of how one could -->
+	<!-- write a web service client, so we package up everything including -->
+	<!-- code, docs, libs, etc. -->
+	<target name="WebServiceClients" depends="distdir,DesktopIcon">
+		<echo message="***** GlobalSight Web Service Testers -- Java and C# clients *****" />
+		<ant antfile="../../envoy/src/webserviceClients/java/build.xml" target="all" inheritAll="false" />
+
+		<!-- Java Web Service Clients -->
+		<zip zipfile="${dist}/${product}_${DSTAMP}_WebSvcClientJava.zip">
+			<zipfileset dir="../../envoy/src/webserviceClients/java" prefix="${product}/webservices/javaClient" excludes="GS_README.txt" />
+		</zip>
+		<!-- C# client -->
+		<zip zipfile="${dist}/${product}_${DSTAMP}_WebSvcClientC#.zip">
+			<zipfileset dir="../../envoy/src/webserviceClients/c-sharp" prefix="${product}/webservices/cSharpClient" />
+		</zip>
+	</target>
+
+	<!--     Build everything and make the zip file -->
+	<target name="dist" depends="clean, zip, WebServiceClients, LingToolsZip, WebtopZip, DesktopIconZip" />
+
+	<target name="distnojsp" depends="dist" />
+
+	<target name="clean">
+		<!--      Delete the classes and ${dist} directory trees      -->
+		<ant antfile="../../ling/build/build.xml" target="clean" />
+		<ant antfile="../install/build.xml" target="clean" />
+		<ant dir="${lingtools}/debex" antfile="build.xml" target="clean" />
+		<ant dir="${lingtools}/galign" antfile="build.xml" target="clean" />
+		<ant dir="../../${diplomatDevSrcJava}/../webtop-plugin" antfile="build.xml" target="clean" inheritAll="false" />
+		<ant antfile="../../envoy/src/webserviceClients/java/build.xml" target="clean" inheritAll="false" />
+		<ant dir="${globalsightServices}" antfile="build.xml" target="clean" inheritAll="false" />
+		<delete dir="${capclasses}" />
+		<delete dir="${testclasses}" />
+		<delete dir="jsp" />
+		<delete dir="apidoc" />
+		<delete dir="tsautoimport" />
+		<delete dir="${dist}">
+		</delete>
+		<delete dir="${docdirectory}">
+		</delete>
+		<delete file="BuildVersion.java" />
+		<delete file="../../${envoySrcJava}/com/globalsight/BuildVersion.java" />
+		<delete file="run.classpath.bat" />
+		<delete file="run.classpath.sh" />
+		<delete dir="com" />
+		<delete file="graphicalWf.jar" />
+		<delete file="customer.jar" />
+		<delete file="dbProfile.jar" />
+		<delete file="commons-httpclient-3.0-rc2.jar" />
+		<delete dir="${testreports}" failonerror="false" />
+	</target>
+
+	<!-- classpath for running GS code within the source tree.  Probably, we should separate the compile classpath from the run classpath. -->
+	<path id="run.classpath">
+		<!-- classpath property is really for compiling and doesn't have the right run-time load ordering. -->
+		<pathelement path="${classpath}" />
+		<!-- classpath property doesn't have this because it's not needed for compiling. -->
+		<pathelement location="${testclasses}" />
+	</path>
+
+	<!-- classpath for running GS code within the source tree, referring to
+	         an install for generated properties.  The gs.home property is the
+	         globalsight.ear directory of the install, and can be set in
+	         user.build.properties.  Note it's up to you to make sure your
+	         install is in sync with the source. -->
+
+	<!-- If they didn't set it in user.build.properties, set to a dummy
+	         value so run.classpath.{bat.sh} don't get funny characters. -->
+	<property name="gs.home" value="gshome" />
+	<path id="runwithinstall.classpath">
+		<path refid="run.classpath" />
+		<pathelement location="${gs.home}/lib/classes" />
+	</path>
+
+	<target name="write-run-classpath">
+		<pathconvert property="runwithinstall.classpath" refid="runwithinstall.classpath" />
+		<echo>Writing classpath to run.classpath.{bat,sh}</echo>
+		<echo file="run.classpath.bat" message="set RUNCLASSPATH=${runwithinstall.classpath}" />
+		<echo file="run.classpath.sh" message="RUNCLASSPATH=${runwithinstall.classpath}" />
+	</target>
+
+	<!-- Run all unittests (or just one if test property is set) -->
+	<target name="test" depends="runtests" />
+	<target name="runtests" depends="all, build-tests, just-runtests" />
+	<!-- Shortcut that does not build the tests, so handy to save time, or
+         to run only the test classes currently present. -->
+	<target name="just-runtests">
+		<mkdir dir="${testreports}" />
+		<mkdir dir="${testreports}/raw" />
+		<junit fork="yes" printsummary="yes" failureproperty="junit.failure">
+			<!-- haltonfailure="yes"> -->
+			<sysproperty key="test.idcs5.enable" value="${test.idcs5.enable}" />
+			<sysproperty key="test.idcs5.winfiles" value="${test.idcs5.winfiles}" />
+			<classpath refid="runwithinstall.classpath" />
+			<batchtest unless="test" todir="${testreports}/raw">
+				<fileset dir="${testclasses}">
+					<include name="**/Test*.class" />
+					<include name="**/*Test.class" />
+					<exclude name="**/*$*" />
+					<!-- no inner clasess -->
+				</fileset>
+				<formatter type="xml" />
+			</batchtest>
+			<test if="test" name="${test}" todir="${testreports}/raw">
+				<formatter type="xml" />
+			</test>
+		</junit>
+		<junitreport todir="${testreports}">
+			<fileset dir="${testreports}/raw" />
+			<report todir="${testreports}" />
+		</junitreport>
+		<fail if="junit.failure" message="Unit test(s) failed.  See reports!" />
+	</target>
+</project>
+

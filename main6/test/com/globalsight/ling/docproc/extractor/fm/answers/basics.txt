@@ -1,0 +1,279 @@
+n
+n
+u
+n
+n
+Note:
+Figure[x1]-[x2]:
+Figure[x3]-[x4]:
+n
+Step
+u
+Table[x5]-[x6]:
+Question/Issue:
+See Also:
+Table
+Table
+Chapter
+(Continued)
+LocalProductShort
+BMC
+(Sheet [x7] of [x8])
+BMC Software, Inc.
+BMC Remedy Action Request System
+AR[x9]System
+7.5.00
+Name="Q103" Version="3.1.0" Status="Release" RevDate="27-May-2003" Creator="Simon F. Bate"
+BMC Software, Inc.
+Alert Guide
+doc_feedback@bmc.com
+January 2009
+BMC Remedy Action Request System 7.5.00
+BMC Remedy User
+BMC Remedy Data Import
+BMC Remedy Alert
+1991�009
+step[x10] on page
+(page[x11])
+page\\
+Table[x12] on page
+Table
+Figure
+step[x13] on page
+Status="Release" RevDate="Feb 2005" ModifiedBy="Lisa Blue"
+step
+Figure[x14] on page
+Chapter
+Chapter
+Chapter
+Chapter
+Chapter
+Appendix
+Appendix
+Appendix
+Appendix
+Chapter
+Chapter
+Appendix
+Appendix
+Basics
+The following topics are provided[x15]:
+[x16]A[x17]bout BMC Remedy Alert
+Alerts are generated when certain conditions take place, such as when a request has been submitted or when progress has been made in resolving a request. 
+Alerts can come from an [x18] server or from a separate program like BMC Remedy Flashboards. 
+Alerts can be handled in different ways, depending on how the administrator configures the system and how you have set your user preferences.
+instantly informs you when you have received a new alert. 
+You can open your list of alerts, in [x19] or in a browser, to manage the list and to open the source request (the request that generated the alert).
+Sometimes the administrator informs users about events or conditions through email notifications. 
+Although email notifications provide information about the source request, they are not stored in a list, and you cannot manage them through [x20] or the web.
+If the administrator notifies you through alerts, you can customize the kind of alert you receive in [x21]. 
+For example, you can choose a sound or a message box. 
+The rest of these help topics explain how to use [x22] and customize it.
+[x23]Working with the alert summary
+Opening the alert summary
+To open the Alert Summary dialog box
+Use one of the following methods:
+Double-click on the [x24] icon.
+Right-click the [x25] icon and select Alert Summary from the menu.
+[x26]Refreshing the alert summary
+To refresh the Alert Summary dialog box
+Use one of the following methods:
+Choose File > Refresh.
+Click the Refresh button.
+[x27]Closing the alert summary
+To close the Alert Summary dialog box
+Use one of the following methods:
+Choose File > Close.
+Click the Close button.
+minimizes to the tray.
+[x28]Opening the alert list
+To open the alert list, you first must have selected a client in which to open the list. 
+After you have specified the type of client, there are several ways to open the alert list.
+[x29]Selecting a client
+To select a client
+In the Alert Summary dialog box, choose Tools > Options.
+The Options dialog box appears.
+In the Alerts tab, select either of the following:
+— [x30]The a[x31]lert list [x32]o[x33]pen[x34]s[x35] [x36]in [x37]. 
+You must have version 5.0 or later installed for this option to work.
+Web[x38]—The alert list [x39]o[x40]pen[x41]s[x42] [x43]in y[x44]our browser. 
+When selecting this option, you must also specify the name of an [x45] server provided by the administrator.
+Note: The a[x46]dministrator must have enabled the alert list for the web. 
+See the [x47]Configuration Guide [x48]f[x49]or more information.
+Click OK to close the Options dialog box.
+[x50]Opening the alert list within the selected client
+To open the alert list
+Use one of the following methods:
+From the Alert Summary dialog box, click the Open Alert List button.
+From the Alert Summary dialog box, choose File > Open Alert List.
+From the Alert Message dialog box, click the Open Alert List button.
+Right-click the [x51] icon in the tray, and select Open Alert List from the menu.
+[x52]Exiting
+To exit
+Use one of the following methods:
+In the Alert Summary dialog box, choose File > Exit.
+Right-click the [x53] icon in the tray, and select Exit from the menu.
+If you made changes to your options, these changes are saved, even if you did not apply them.
+Preference s[x54]ervers
+A preference server is a server on which user preferences are stored. 
+The administrator can specify a preference server during installation of AR[x55]System. 
+A preference server enables [x56]s[x57]ettings on your local machine to be accessible from any computer on which the[x58] AR[x59]System[x60] [x61]client i[x62]s installed.
+If [x63]the a[x64]dministrator has specified a preference server for your system, you can select that server when you log in[x65].[x66] 
+The preference settings from your local machine (as set in the Options dialog box) are stored in the [x67] User Preference form on your preference server[x68].
+I’m 4. 
+I’m 5. 
+I’m 6.
+T[x69]he preferences you set from the [x70]Options dialog box are store[x71]d
+l[x72]ocally in an [x73]ar.ini[x74] file [x75]i[x76]f you did not log in to a preference server[x77],[x78] or
+c[x79]entrally in the preference server[x80],[x81] [x82]i[x83]f you did log in to a preference server[x84].
+If you [x85]do not want to l[x86]og in to a preference server, select (none) in the Preference Server field when you log in.
+AR System Home folder
+The [x87] Home folder contains your personalized configuration information. 
+This includes:
+Option and default settings
+Server list
+Information and settings used by [x88] and
+By default, the [x89]Home folder is set to a folder within the [x90]arsystem[x91] installation folder. 
+Usually this is [x92]C:\Program Files\arsystem\Home[x93].
+If more than one person will be logging in on the same computer, [x94]always s[x95]pecify an alternate Home folder for each user. 
+This allows individual users to have their own options and configuration settings.
+If you do not specify alternate Home folders and other users log in to
+on your computer, your settings will be overwritten.
+If the administrator has specified a preference server, your settings will be retained when you log in to any computer.
+For more information about the names and locations of configuration and option files in the [x96] installation, see the [x97]Installation Guide[x98].
+Setting t[x99]he [x100] Home folder
+To set the AR[x101]System Home folder
+Choose Tools > Account.
+In the Account dialog box, click U[x102]sers.
+Click on the row for the user whose Home folder you want to set.
+Click Modify[x103] to open the Modify User dialog box[x104].
+I[x105]n the Home Directory field, enter the complete path for this user’s Home folder.
+Click OK to return to the Users dialog box. 
+The new Home folder name should appear in the Account dialog box.
+Click OK to close the Account dialog box.
+Choose Tools > Login.
+In the Login dialog box, enter t[x106]he appropriate login information.
+Click OK.
+Adding, changing, and deleting user information
+More than one user can use BMC Remedy User, Alert, Administrator, or Import on the same computer. 
+If more than one user will be sharing the tool on the same computer, you can add users to keep configurations separate for each user. 
+You can also change information for existing users, and delete users.
+Adding [x107]u[x108]sers
+A[x109]ll users that you add [x110]are listed i[x111]n the Users dialog box, which can be accessed from the Account dialog box.
+Before you add users, make sure that the administrator has registered them. 
+Whether an unregistered user can log in to and use [x112]the client d[x113]epends on the system’s configurations:
+If unregistered users are not allowed on the servers in the server list, they will not be able to log in[x114].
+If unregistered users are allowed on the servers in the server list, [x115]the system s[x116]tarts with a “guest” set of capabilities. 
+A guest user can retrieve public information in the system.
+If more than one user runs [x117]the AR[x118]System client o[x119]n the same computer, specify different [x120]AR[x121]System Home folders f[x122]or each user[x123].
+Note: On t[x124]he user’s [x125]computer, a u[x126]ser can change another user’s list of servers and [x127]Home[x128] folder, but not the password. 
+If you have logged in to a preference server, your settings are stored on that server.
+To add a user
+Choose Tools > Account.
+In the Account dialog box, click U[x129]sers.
+In the Users dialog box, click A[x130]dd.
+In the Add Users dialog box, enter t[x131]he name of the new user in the User field.
+Enter the home directory for the new user in the Home Directory field, or use the Browse button to select a directory.
+Click OK[x132].
+The new user name appears at the bottom of the list.
+Choose Tools > Login.
+In the Login dialog box, enter the login i[x133]nformation for the new user.
+Click OK.
+Related topics
+Changing [x134]u[x135]ser information
+Changes you make to user information take effect the next time you log in.
+To change user information
+Choose Tools > Account.
+In the Account dialog box, click U[x136]sers.
+In the Users dialog box, select t[x137]he name of the user you want to modify, and click Modify[x138] to open the Modify User dialog box[x139].
+I[x140]n the User or Home Directory fields, change the information as necessary.
+Click OK to close the Modify User, Users, and Account dialog boxes.
+Choose Tools > Login.
+In the Login dialog box, enter login i[x141]nformation for the new user.
+Click OK.
+Deleting a[x142] [x143]user
+To delete a user
+Choose Tools > Account.
+In the Account dialog box, click U[x144]sers[x145].
+In the Users dialog box, select t[x146]he user name that you want to delete.
+Click [x147]D[x148]elete[x149].
+C[x150]lick Yes[x151] to confirm the deletion.
+C[x152]lick OK[x153].
+Note: When y[x154]ou delete a user, that user’s [x155] Home folder and the files contained in it remain on your system.
+Adding, changing, and deleting server information
+You can [x156]add servers, u[x157]pdate server information[x158], or delete servers f[x159]rom the Account dialog box. 
+Any server information you change is stored in your [x160] Home folder, and affects any other users who share your Home folder. 
+If you have logged in to a preference server, your server settings are updated on that server and affect only you; other users are not affected.
+The Account dialog box provides the following information for the current user:
+The name of the current user (in the title bar)
+Whether a preference server has been selected
+A red button and the words “No preference server selected” indicates that no preference server was selected for this login. 
+All servers listed are saved locally.
+A green button with the words “Preference server <[x161]name[x162]> is active” indicates that a preference server is active for this session. 
+All servers listed are saved to the preference server.
+A list of the servers that were selected when [x163] was installed, and their current connection status
+A green check mark before a server name indicates that the system will attempt[x164]s[x165] to connect to that server at login.
+A red X indicates that the system [x166]does n[x167]ot attempt to connect to that server at login.
+Server names in [x168]bold[x169] are servers to which you are currently connected.
+Adding a[x170] [x171]server
+To add a server
+Choose Tools > Account.
+In the Account dialog box, click A[x172]dd.
+A space for the new server name appears at the top of the list.
+Type the name of the server you want to add[x173].
+If the server is set up to use a firewall, your administrator must specify a port number for users to connect to. 
+(You can also add a port number if you want to connect to a private server behind a firewall.)
+T[x174]o view port numbers for servers listed, select the Advanced Server Properties check box.
+Click OK.
+Choose Tools > Login.
+In the Login dialog box, enter t[x175]he appropriate[x176] login i[x177]nformation.
+Click OK.
+Related topics
+Changing [x178]server information
+To change information about a server
+Choose Tools > Account.
+The Account dialog box appears, with the user name in the title bar.
+In the Servers list, click on the name of the server you want to change.
+Click Modify.
+A box appears around the server name.
+Place the cursor in the edit box, type a new name, and press Enter. 
+The new server name must be a known name on the network.
+Click OK.
+To connect to the server, click on the symbol before the server name.
+If the server is set up to use a firewall, you must specify a port number for users to connect to. 
+(You can also add a port number if you want to connect to a private server behind a firewall.[x179])
+Lo[x180]g in again to activate the changes.
+Related topics
+Specifying a[x181] port number [x182]for a [x183]server
+To specify a port number for a server
+In the Account dialog box (Tools > Account), select the Advanced Server Properties check box to view the advanced port columns.
+Click in one of the following columns, and type the port number or the private server number that you want to connect to. 
+Perform this step only if you want to connect to a private server. 
+For more information about using the [x184] Portmapper with [x185], see the [x186]Configuration Guide[x187].
+AR TCP Port [x188]represents the port number of the specified [x189] server or the private server.
+AR RPC #[x190] represents the program number of the specified [x191] server. 
+This number enables you to connect to private server.
+Deactivating a[x192] [x193]server
+Use the following procedure to [x194]deactivate[x195] a server in your list. 
+To [x196]delete[x197] the server from the list, see [x198].
+To deactivate a server
+Choose Tools > Account.
+In the Account dialog box, click U[x199]sers.
+In the Users dialog box, click on the name of the user for which this server should be deactivated.
+Click OK to return to the Account dialog box.
+In the list of servers, click on the green check mark next to the server you want to deactivate.
+T[x200]he symbol changes to a red X.
+Click OK.
+Choose Tools > Login.
+In the Login dialog box, enter t[x201]he appropriate[x202] login information.
+Click OK.
+To reactivate the server, repeat these steps, and click the red X next to the server you want to reactivate.
+Deleting a[x203] [x204]server
+To delete a server
+Choose Tools > Account[x205] to open the Account dialog box.
+I[x206]n the Servers list, [x207]select the n[x208]ame of the server [x209]t[x210]o delete.
+Click Delete.
+C[x211]lick Yes[x212] to confirm the deletion.
+Click Close[x213].
+Choose Tools > Login.
+In the Login dialog box, enter t[x214]he appropriate[x215] login in[x216]formation.

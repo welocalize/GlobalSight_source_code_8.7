@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.globalsight.everest.foundation.LocalePair"
+        table="LOCALE_PAIR">
+        <id name="id" column="ID" type="long">
+            <generator class="native" />
+        </id>
+        
+        <property name="companyId" length="20" column="COMPANY_ID"
+			type="long" not-null="true" unique="false" />
+        <property name="isActive" column="IS_ACTIVE" type="yes_no"
+            not-null="true" unique="false" />
+
+        <many-to-one name="source" column="SOURCE_LOCALE_ID"
+            class="com.globalsight.util.GlobalSightLocale"
+            not-null="false" lazy="false"/>
+        <many-to-one name="target" column="TARGET_LOCALE_ID"
+            class="com.globalsight.util.GlobalSightLocale"
+            not-null="false" lazy="false"/>
+    </class>
+</hibernate-mapping>
+

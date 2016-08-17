@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.globalsight.cxe.entity.customAttribute.TMPAttribute"
+		table="TM_PROFILE_ATTRIBUTE">
+		<id name="id" column="ID" type="long">
+			<generator class="native" />
+		</id>
+
+		<many-to-one name="tmprofile" column="TMP_ID"
+			class="com.globalsight.everest.projecthandler.TranslationMemoryProfile"
+			not-null="true" />
+		<property name="attributeName" column="ATT_NAME" type="string"
+			not-null="true" unique="false" />
+		<property name="operator" column="OPERATOR" type="string"
+			not-null="true" unique="false" />
+		<property name="valueType" column="VALUE_TYPE" type="string"
+			not-null="true" unique="false" />
+		<property name="valueData" column="VALUE_DATA" type="string"
+			not-null="false" unique="false" />
+		<property name="andOr" column="AND_OR" type="string"
+			not-null="false" unique="false" />
+		<property name="order" column="PRIORITY_ORDER" type="int"
+			not-null="false" unique="false" />
+	</class>
+</hibernate-mapping>

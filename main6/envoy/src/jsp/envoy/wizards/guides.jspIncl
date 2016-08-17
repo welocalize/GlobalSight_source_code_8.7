@@ -1,0 +1,865 @@
+<%@ page
+    import="java.util.*,
+         com.globalsight.util.resourcebundle.ResourceBundleConstants,
+         com.globalsight.everest.webapp.WebAppConstants,
+         com.globalsight.everest.webapp.javabean.NavigationBean,
+         com.globalsight.everest.webapp.pagehandler.PageHandler,
+         com.globalsight.everest.webapp.webnavigation.LinkHelper,
+         com.globalsight.everest.webapp.pagehandler.administration.users.UserUtil,
+	     com.globalsight.util.modules.Modules,
+         java.util.ResourceBundle"
+%>
+<%!
+    static boolean b_databaseGuide = Modules.isDatabaseAdapterInstalled();
+    static boolean b_costingGuide = Modules.isCostingInstalled();
+    static boolean b_calendarGuide = Modules.isCalendaringInstalled();
+%>
+<%    
+    ResourceBundle menuBundle = PageHandler.getBundle(session);
+
+    //URL of the menu items
+    String companiesUrlGuide = LinkHelper.getWebActivityURL(request, "companies");
+    String activityTypesUrlGuide = LinkHelper.getWebActivityURL(request, "activities");
+    String calendarsUrlGuide = LinkHelper.getWebActivityURL(request, "calendars");
+    String currencyUrlGuide = LinkHelper.getWebActivityURL(request, "currency");
+    String dbConnectionsUrlGuide = LinkHelper.getWebActivityURL(request, "dbconnections");
+    String dbImportSettingsUrlGuide = LinkHelper.getWebActivityURL(request, "dbimportsettings");
+    String dbPreviewRulesUrlGuide = LinkHelper.getWebActivityURL(request, "dynamicURLs");
+    String dbProfilesUrlGuide = LinkHelper.getWebActivityURL(request, "dbprofiles");
+    String fileExtensionsUrlGuide = LinkHelper.getWebActivityURL(request, "fileextensions");
+    String fileProfilesUrlGuide = LinkHelper.getWebActivityURL(request, "fileprofiles");
+    String finishUrlGuide = LinkHelper.getWebActivityURL(request, "finish");
+    String glossariesUrlGuide = LinkHelper.getWebActivityURL(request, "glossaries");
+    String locProfilesUrlGuide = LinkHelper.getWebActivityURL(request, "locprofiles");
+    String localePairsUrlGuide = LinkHelper.getWebActivityURL(request, "locales");
+    String attributeUrlGuide = LinkHelper.getWebActivityURL(request, "attributeDefine");
+    String attributeGroupUrlGuide = LinkHelper.getWebActivityURL(request, "attributeGroups");
+    String myActivitiesUrlGuide = LinkHelper.getWebActivityURL(request, "myactivities");
+    String myJobsUrlGuide = LinkHelper.getWebActivityURL(request, "jobsInProgress");
+    String permissionGroupsUrlGuide = LinkHelper.getWebActivityURL(request, "permissions");
+    String projectsUrlGuide = LinkHelper.getWebActivityURL(request, "projects");
+    String rateUrlGuide = LinkHelper.getWebActivityURL(request, "rate");
+    String startUrlGuide = LinkHelper.getWebActivityURL(request, "start");
+    String sys4reportsUrlGuide = LinkHelper.getWebActivityURL(request, "reports");
+    String workflowsUrlGuide = LinkHelper.getWebActivityURL(request, "templates");
+    String createZipJobGuide = LinkHelper.getWebActivityURL(request, "createZipJobs");
+    String terminologyUrlGuide = LinkHelper.getWebActivityURL(request, "termbases");
+    String tmUrlGuide = LinkHelper.getWebActivityURL(request, "tm");
+    String tmProfileUrlGuide = LinkHelper.getWebActivityURL(request, "tmProfiles");
+    String mtProfilesUrlGuide = LinkHelper.getWebActivityURL(request,"mtProfiles");
+    String usersUrlGuide = LinkHelper.getWebActivityURL(request, "users");
+    String xmlRulesUrlGuide = LinkHelper.getWebActivityURL(request, "xmlrules");
+    String xmlDtdsUrlGuide = LinkHelper.getWebActivityURL(request, "xmldtds");
+    String segmentationRulesUrlGuide = LinkHelper.getWebActivityURL(request, "segmentationrules");
+    
+    String filterConfigurationGuide = LinkHelper.getWebActivityURL(request, "filterConfiguration");
+    //It's a very ugly implementation for multicompany prototype. Modify it in real version.
+    boolean isSuperAdmin2 = UserUtil.isSuperAdmin(
+        (String) request.getSession().getAttribute(WebAppConstants.USER_NAME));
+%>
+<!-- The "generic" (layer) is the generic guide that is the first 
+     part of ALL the guides -->
+<DIV ID="generic" 
+    STYLE="position: absolute; width:100%;
+    z-index: 1; 
+    top: 88px; 
+    left: 0px;
+    visibility: hidden;">
+
+
+<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0" BGCOLOR="#DDDDDD" WIDTH="100%">
+<TR>
+<TD>&nbsp;</TD>
+<TD HEIGHT=27 WIDTH=81><IMG SRC="/globalsight/images/en_US/guide_logo_fileSystem.gif"
+    NAME="guideLogo1" HEIGHT=27 WIDTH=81 BORDER=0></TD>
+<TD HEIGHT=35 WIDTH=10><IMG SRC="/globalsight/images/guide_arrow.gif" 
+    HEIGHT=28 WIDTH=9 BORDER=0 HSPACE=5></TD>
+<TD>
+
+<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0">
+<!-- This row is for the top part of the dot -->
+<TR>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="startDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% if (isSuperAdmin2) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="companiesDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% } %>
+<% if (userPerms.getPermissionFor(Permission.ATTRIBUTE_VIEW)) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="attributesDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% } %>
+<% if (userPerms.getPermissionFor(Permission.ATTRIBUTE_GROUP_VIEW)) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="attributeGroupsDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% } %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="localePairsDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="activityTypeDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<%if (b_costingGuide) {%>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="currencyDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="rateDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<%}%>
+<% if (b_calendarGuide) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="calendarsDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% } %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="permissionGroupsDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% if (userPerms.getPermissionFor(Permission.USERS_VIEW) && (userPerms.getPermissionFor(Permission.USERS_EDIT) || 
+        userPerms.getPermissionFor(Permission.USERS_REMOVE) || userPerms.getPermissionFor(Permission.USERS_NEW))) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="usersDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<%}%>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="tmDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="tmProfilesDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% if (userPerms.getPermissionFor(Permission.MTP_VIEW)) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="mtProfilesDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% } %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="terminologyDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="projectsDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD WIDTH=24 HEIGHT=2></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2></TD>
+</TR>
+
+<!-- This row is for the bar -->
+<TR>
+<TD ID="startBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="startBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<% if (isSuperAdmin2) { %>
+<TD ID="companiesBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="companiesBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<% } %>
+<% if (userPerms.getPermissionFor(Permission.ATTRIBUTE_VIEW)) { %>
+<TD ID="attributesBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="attributesBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<% } %>
+<% if (userPerms.getPermissionFor(Permission.ATTRIBUTE_GROUP_VIEW)) { %>
+<TD ID="attributeGroupsBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="attributeGroupsBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<% } %>
+<TD ID="localePairsBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="localePairsBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="activityTypeBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="activityTypeBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<%if (b_costingGuide) {%>
+<TD ID="currencyBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="currencyBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="rateBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="rateBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<%}%>
+<% if (b_calendarGuide) { %>
+<TD ID="calendarsBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="calendarsBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<%}%>
+<TD ID="permissionGroupsBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="permissionGroupsBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<% if (userPerms.getPermissionFor(Permission.USERS_VIEW) && (userPerms.getPermissionFor(Permission.USERS_EDIT) || 
+        userPerms.getPermissionFor(Permission.USERS_REMOVE) || userPerms.getPermissionFor(Permission.USERS_NEW))) { %>
+<TD ID="usersBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="usersBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<% } %>
+<TD ID="tmBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="tmBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="tmProfilesBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="tmProfilesBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<% if (userPerms.getPermissionFor(Permission.MTP_VIEW)) { %>
+<TD ID="mtProfilesBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="mtProfilesBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<% } %>
+<TD ID="terminologyBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="terminologyBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="projectsBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="projectsBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD WIDTH=24 HEIGHT=3><IMG SRC="/globalsight/images/dotted_line_right.gif" 
+    NAME="rightArrowBar" HEIGHT=3 WIDTH=24></TD>
+<TD WIDTH=10 HEIGHT=3></TD>
+<TD HEIGHT=2></TD>
+</TR> 
+
+<!-- This row is for the bottom part of the dot -->
+<TR>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="startDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% if (isSuperAdmin2) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="companiesDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.ATTRIBUTE_VIEW)) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="attributesDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% } %>
+
+<% if (userPerms.getPermissionFor(Permission.ATTRIBUTE_GROUP_VIEW)) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="attributeGroupsDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% } %>
+
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="localePairsDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="activityTypeDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<%if (b_costingGuide) {%>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="currencyDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="rateDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<%}%>
+<% if (b_calendarGuide) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="calendarsDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<%}%>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="permissionGroupsDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% if (userPerms.getPermissionFor(Permission.USERS_VIEW) && (userPerms.getPermissionFor(Permission.USERS_EDIT) || 
+        userPerms.getPermissionFor(Permission.USERS_REMOVE) || userPerms.getPermissionFor(Permission.USERS_NEW))) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="usersDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<%}%>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="tmDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="tmProfilesDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% if (userPerms.getPermissionFor(Permission.MTP_VIEW)) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="mtProfilesDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% } %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="terminologyDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="projectsDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD WIDTH=24 HEIGHT=2></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2></TD>
+</TR>
+
+<TR>
+<TD COLSPAN=20 HEIGHT=2></TD>
+</TR>
+
+<TR>
+    <TD CLASS="wizardCellStartFinish" ID="start">
+        <A ID="startLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=startUrlGuide%>')" ><%= menuBundle.getString("lb_start") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+<% if (isSuperAdmin2) { %>                    
+    <TD CLASS="wizardCell" ID="companies">
+        <A ID="companiesLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=companiesUrlGuide%>')" ><%= menuBundle.getString("lb_companies") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+<% } %>
+<% if (userPerms.getPermissionFor(Permission.ATTRIBUTE_VIEW)) { %>
+    <TD CLASS="wizardCell" ID="attributes">
+        <A ID="attributesLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=attributeUrlGuide%>')" ><%= menuBundle.getString("lb_define_attribute") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+<% } %>
+<% if (userPerms.getPermissionFor(Permission.ATTRIBUTE_GROUP_VIEW)) { %>
+    <TD CLASS="wizardCell" ID="attributeGroups">
+        <A ID="attributeGroupsLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=attributeGroupUrlGuide%>')" ><%= menuBundle.getString("lb_attribute_group") %></A>
+    </TD>
+     <TD WIDTH=10></TD>
+<% } %>    
+       
+    <TD CLASS="wizardCell" ID="localePairs">
+        <A ID="localePairsLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=localePairsUrlGuide%>')" ><%= menuBundle.getString("lb_locale_pairs") %></A>
+    </TD>
+        <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="activityType">
+        <A ID="activityTypeLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=activityTypesUrlGuide%>')" ><%= menuBundle.getString("lb_activity_types") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+<%if(b_costingGuide) { %>
+    <TD CLASS="wizardCell" ID="currency">
+        <A ID="currencyLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=currencyUrlGuide%>')" ><%= menuBundle.getString("lb_currency") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="rate">
+        <A ID="rateLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=rateUrlGuide%>')" ><%= menuBundle.getString("lb_rates") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+<% } %>
+<% if (b_calendarGuide) { %>
+    <TD CLASS="wizardCell" ID="calendars">
+        <A ID="calendarsLink"
+           CLASS="wizardLinks"    
+           HREF="javascript:loadUrl('<%=calendarsUrlGuide%>')"><%= menuBundle.getString("lb_calendars") %></A> 
+    </TD>
+    <TD WIDTH=10></TD>
+<% } %>
+    <TD CLASS="wizardCell" ID="permissionGroups">
+        <A ID="permissionGroupsLink"
+           CLASS="wizardLinks"    
+           HREF="javascript:loadUrl('<%=permissionGroupsUrlGuide%>')"><%= menuBundle.getString("lb_permission_groups") %></A> 
+    </TD>
+    <TD WIDTH=10></TD>
+<% if (userPerms.getPermissionFor(Permission.USERS_VIEW) && (userPerms.getPermissionFor(Permission.USERS_EDIT) || 
+        userPerms.getPermissionFor(Permission.USERS_REMOVE) || userPerms.getPermissionFor(Permission.USERS_NEW))) { %>
+    <TD CLASS="wizardCell" ID="users">
+        <A ID="usersLink"
+           CLASS="wizardLinks"    
+           HREF="javascript:loadUrl('<%=usersUrlGuide%>')"><%= menuBundle.getString("lb_users") %></A> 
+    </TD>
+    <TD WIDTH=10></TD>
+<% } %>
+    <TD CLASS="wizardCell" ID="tm">
+        <A ID="tmLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=tmUrlGuide%>')" ><%= menuBundle.getString("lb_tm") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="tmProfiles">
+        <A ID="tmProfilesLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=tmProfileUrlGuide%>')" ><%= menuBundle.getString("lb_tm_profiles") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <% if (userPerms.getPermissionFor(Permission.MTP_VIEW)) { %>
+    <TD CLASS="wizardCell" ID="mtProfiles">
+        <A ID="mtProfilesLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=mtProfilesUrlGuide%>')" ><%= menuBundle.getString("lb_mt_profiles") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <% } %>
+    <TD CLASS="wizardCell" ID="terminology">
+        <A ID="terminologyLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=terminologyUrlGuide%>')" ><%= menuBundle.getString("lb_terminology") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="projects">
+        <A ID="projectsLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=projectsUrlGuide%>')" ><%= menuBundle.getString("lb_projects") %></A> 
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCellArrow" TITLE="<%= menuBundle.getString("lb_next") %>" ID="next">
+        <A ID="nextLink"
+           CLASS="wizardCellArrowLinks" 
+           HREF="javascript:loadUrl('<%=workflowsUrlGuide%>')">&gt;&gt;</A> 
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD VALIGN="BOTTOM">
+        <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0" BGCOLOR="#DDDDDD">
+            <TR>
+            <TD CLASS="wizardCellClose" TITLE="<%= menuBundle.getString("lb_close") %>" 
+                HEIGHT=10><A CLASS="wizardCellCloseLinks" 
+                HREF="javascript: hideGuide();"><%= menuBundle.getString("lb_close") %></A></TD>
+            </TR>
+        </TABLE>
+    </TD>
+</TR>
+</TABLE>
+
+</TD>
+</TR>
+</TABLE>
+
+</DIV>
+
+<!-- The "fileSystem2" (layer) is the second part of the FileSystem guide,
+     the first part being the "generic" layer -->
+<DIV ID="fileSystem2" 
+    STYLE="position: absolute; width:100%;
+    z-index: 1; 
+    top: 88px; 
+    left: 0px;
+    visibility: hidden;">
+
+<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0" BGCOLOR="#DDDDDD" WIDTH="100%">
+<TR>
+<TD>&nbsp;</TD>
+<TD HEIGHT=27 WIDTH=81><IMG SRC="/globalsight/images/en_US/guide_logo_fileSystem.gif" NAME="guideLogo2"
+    HEIGHT=27 WIDTH=81 BORDER=0></TD>
+<TD HEIGHT=35 WIDTH=10><IMG SRC="/globalsight/images/guide_arrow.gif" 
+    HEIGHT=28 WIDTH=9 BORDER=0 HSPACE=5></TD>
+<TD>
+
+<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0">
+<!-- This row is for the top part of the dot -->
+<TR>
+<TD WIDTH=24 HEIGHT=2></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="workflowsDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="locProfilesDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="xmlRulesDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="xmlDtdsDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="segmentationRulesDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="fileExtensionsDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="filterConfigurationDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="fileProfilesDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% if (userPerms.getPermissionFor(Permission.CREATE_JOB_NO_APPLET)) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="createZipJobDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<%}%>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="finishDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2></TD>
+</TR>
+
+<!-- This row is for the bar -->
+<TR>
+<TD WIDTH=24 HEIGHT=3><IMG SRC="/globalsight/images/dotted_line_left.gif" 
+    NAME="fileSystemLeftArrowBar" HEIGHT=3 WIDTH=24></TD>
+<TD ID="fileSystemBackLeftArrowBarSpacer" WIDTH=10 HEIGHT=3></TD>
+<TD ID="workflowsBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="workflowsBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="locProfilesBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="locProfilesBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="xmlRulesBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="xmlDtdsBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="xmlRulesBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="xmlDtdsBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="segmentationRulesBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="segmentationRulesBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="fileExtensionsBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="fileExtensionsBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="filterConfigurationBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="filterConfigurationBarSpacer" WIDTH=10 HEIGHT=2></TD>
+
+<TD ID="fileProfilesBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="fileProfilesBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<% if (userPerms.getPermissionFor(Permission.CREATE_JOB_NO_APPLET)) { %>
+<TD ID="createZipJobBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="createZipJobBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<%}%>
+<TD ID="finishBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="finishBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD HEIGHT=2></TD>
+</TR>
+
+<!-- This row is for the bottom part of the dot -->
+<TR>
+<TD WIDTH=24 HEIGHT=2></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="workflowsDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="locProfilesDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="xmlRulesDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="xmlDtdsDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="segmentationRulesDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="fileExtensionsDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="filterConfigurationDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="fileProfilesDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<% if (userPerms.getPermissionFor(Permission.CREATE_JOB_NO_APPLET)) { %>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="createZipJobDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<%}%>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="finishDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2></TD>
+</TR>
+
+<TR>
+<TD COLSPAN=20 HEIGHT=2></TD>
+</TR>
+
+<TR>
+    <TD CLASS="wizardCellArrow" TITLE="<%=menuBundle.getString("lb_back") %>" ID="fileSystemBack">
+        <A ID="fileSystemBackLink"
+           CLASS="wizardCellArrowLinks" 
+           HREF="javascript:loadUrl('<%=projectsUrlGuide%>');">&lt;&lt;</A> 
+    </TD>             
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="workflows">
+        <A ID="workflowsLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=workflowsUrlGuide%>')" ><%= menuBundle.getString("lb_workflows") %></A> 
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="locProfiles">
+        <A ID="locProfilesLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=locProfilesUrlGuide%>')" ><%= menuBundle.getString("lb_loc_profiles") %></A> 
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="xmlRules">
+        <A ID="xmlRulesLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=xmlRulesUrlGuide%>')" ><%= menuBundle.getString("lb_xml_rules") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="xmlDtds">
+        <A ID="xmlDtdsLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=xmlDtdsUrlGuide%>')" ><%= menuBundle.getString("lb_xml_dtds") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="segmentationRules">
+        <A ID="segmentationRulesLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=segmentationRulesUrlGuide%>')" ><%= menuBundle.getString("lb_segmentation_rules") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="fileExtensions">
+        <A ID="fileExtensionsLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=fileExtensionsUrlGuide%>')" ><%= menuBundle.getString("lb_file_extensions") %></A>
+    </TD>
+    
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="filterConfiguration">
+        <A ID="filterConfigurationLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=filterConfigurationGuide%>')" ><%= menuBundle.getString("lb_filter_configuration") %></A>
+    </TD>
+    
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" ID="fileProfiles">
+        <A ID="fileProfilesLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=fileProfilesUrlGuide%>')" ><%= menuBundle.getString("lb_file_profiles") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <% if (userPerms.getPermissionFor(Permission.CREATE_JOB_NO_APPLET)) { %>
+    <TD CLASS="wizardCell" ID="createZipJob">
+        <A ID="createZipJobLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=createZipJobGuide%>')" ><%= menuBundle.getString("lb_create_job_without_java") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <%}%>
+    <TD CLASS="wizardCellStartFinish" ID="finish">
+        <A ID="finishLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=finishUrlGuide%>')" ><%= menuBundle.getString("lb_finish") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD VALIGN="BOTTOM">
+        <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0" BGCOLOR="#DDDDDD">
+            <TR>
+            <TD CLASS="wizardCellClose" TITLE="<%= menuBundle.getString("lb_close") %>" 
+                HEIGHT=10><A CLASS="wizardCellCloseLinks" 
+                HREF="javascript: hideGuide();"><%= menuBundle.getString("lb_close") %></A></TD>
+            </TR>
+        </TABLE>
+    </TD>
+    </TR>
+</TABLE>
+
+</TD>
+</TR>
+</TABLE>
+
+</DIV>
+
+<%if (b_databaseGuide) {%>
+<!-- The "database2" (layer) is the second part of the Database guide,
+     the first part being the "generic" layer -->
+<DIV ID="database2" 
+    STYLE="position: absolute; 
+    z-index: 1; 
+    top: 88px; 
+    left: 0px;
+    visibility: hidden;">
+
+<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0" BGCOLOR="#DDDDDD" WIDTH="100%">
+<TR>
+<TD>&nbsp;</TD>
+<TD HEIGHT=27 WIDTH=81><IMG SRC="/globalsight/images/en_US/guide_logo_database.gif" NAME="guideLogo2"
+    HEIGHT=27 WIDTH=81 BORDER=0></TD>
+<TD HEIGHT=35 WIDTH=10><IMG SRC="/globalsight/images/guide_arrow.gif" 
+    HEIGHT=28 WIDTH=9 BORDER=0 HSPACE=5></TD>
+<TD>
+
+<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0">
+<!-- This row is for the top part of the dot -->
+<TR>
+<TD WIDTH=24 HEIGHT=2></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="workflowsDatabaseDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="locProfilesDatabaseDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="xmlRulesDatabaseDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="xmlDtdsDatabaseDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="segmentationRulesDatabaseDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="dbConnectionsDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="dbImportSettingsDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="dbPreviewRulesDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="dbProfilesDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="importDatabaseDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_top.gif" 
+    NAME="finishDatabaseDotTop" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2></TD>
+</TR>
+
+<!-- This row is for the bar -->
+<TR>
+<TD WIDTH=24 HEIGHT=3><IMG SRC="/globalsight/images/dotted_line_left.gif" 
+    NAME="databaseLeftArrowBar" HEIGHT=3 WIDTH=24></TD>
+<TD ID="databaseBackLeftArrowBarSpacer" WIDTH=10 HEIGHT=3></TD>
+<TD ID="workflowsDatabaseBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="workflowsDatabaseBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="locProfilesDatabaseBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="locProfilesDatabaseBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="xmlRulesDatabaseBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="xmlRulesDatabaseBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="xmlDtdsDatabaseBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="xmlDtdsDatabaseBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="segmentationRulesDatabaseBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="segmentationRulesDatabaseBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="dbConnectionsBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="dbConnectionsBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="dbImportSettingsBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="dbImportSettingsBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="dbPreviewRulesBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="dbPreviewRulesBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="dbProfilesBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="dbProfilesBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="importDatabaseBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="importDatabaseBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD ID="finishDatabaseBar" HEIGHT=3 ALIGN="CENTER"></TD>
+<TD ID="finishDatabaseBarSpacer" WIDTH=10 HEIGHT=2></TD>
+<TD HEIGHT=2></TD>
+</TR>
+
+<!-- This row is for the bottom part of the dot -->
+<TR>
+<TD WIDTH=24 HEIGHT=2></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="workflowsDatabaseDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="locProfilesDatabaseDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="xmlRulesDatabaseDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="xmlDtdsDatabaseDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="segmentationRulesDatabaseDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="dbConnectionsDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="dbImportSettingsDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="dbPreviewRulesDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="dbProfilesDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="importDatabaseDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2 ALIGN="CENTER"><IMG SRC="/globalsight/images/dot_gray_guide_bottom.gif" 
+    NAME="finishDatabaseDotBottom" HEIGHT=2 WIDTH=7></TD>
+<TD WIDTH=10  HEIGHT=2></TD>
+<TD HEIGHT=2></TD>
+</TR>
+
+<TR>
+<TD COLSPAN=20 HEIGHT=2></TD>
+</TR>
+
+<TR>
+    <TD CLASS="wizardCellArrow" NOWRAP TITLE="<%=menuBundle.getString("lb_back") %>" ID="databaseBack">
+        <A ID="databaseBackLink"
+           CLASS="wizardCellArrowLinks" 
+           HREF="javascript:loadUrl('<%=projectsUrlGuide%>');">&lt;&lt;</A> 
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" NOWRAP ID="workflowsDatabase">
+        <A ID="workflowsDatabaseLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=workflowsUrlGuide%>')" ><%= menuBundle.getString("lb_workflows") %></A> 
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" NOWRAP ID="locProfilesDatabase">
+        <A ID="locProfilesDatabaseLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=locProfilesUrlGuide%>')" ><%= menuBundle.getString("lb_l10n_profiles") %></A> 
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" NOWRAP ID="xmlRulesDatabase">
+        <A ID="xmlRulesDatabaseLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=xmlRulesUrlGuide%>')" ><%= menuBundle.getString("lb_xml_rules") %></A>
+    </TD>
+    <TD CLASS="wizardCell" NOWRAP ID="xmlDtdsDatabase">
+        <A ID="xmlRulesDatabaseLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=xmlDtdsUrlGuide%>')" ><%= menuBundle.getString("lb_xml_dtds") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" NOWRAP ID="segmentationRulesDatabase">
+        <A ID="segmentationRulesDatabaseLink" 
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=segmentationRulesUrlGuide%>')" ><%= menuBundle.getString("lb_segmentation_rules") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" NOWRAP ID="dbConnections">
+        <A ID="dbConnectionsLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=dbConnectionsUrlGuide%>')" ><%= menuBundle.getString("lb_db_connections2") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" NOWRAP ID="dbImportSettings">
+        <A ID="dbImportSettingsLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=dbImportSettingsUrlGuide%>')" ><%= menuBundle.getString("lb_db_import") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" NOWRAP ID="dbPreviewRules">
+        <A ID="dbPreviewRulesLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=dbPreviewRulesUrlGuide%>')" ><%= menuBundle.getString("lb_db_preview") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" NOWRAP ID="dbProfiles">
+        <A ID="dbProfilesLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=dbProfilesUrlGuide%>')" ><%= menuBundle.getString("lb_db_profiles2") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCell" NOWRAP ID="importDatabase">
+        <A ID="importDatabaseLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:openHelpWindow('/globalsight/help/en_US/setupWizardDatabaseImportHelp.html')" ><%= menuBundle.getString("lb_import") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD CLASS="wizardCellStartFinish" NOWRAP ID="finishDatabase">
+        <A ID="finishDatabaseLink"
+           CLASS="wizardLinks" 
+           HREF="javascript:loadUrl('<%=finishUrlGuide%>')" ><%= menuBundle.getString("lb_finish") %></A>
+    </TD>
+    <TD WIDTH=10></TD>
+    <TD VALIGN="BOTTOM">
+        <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0" BGCOLOR="#DDDDDD">
+            <TR>
+            <TD CLASS="wizardCellClose" TITLE="<%= menuBundle.getString("lb_close") %>" 
+                HEIGHT=10><A CLASS="wizardCellCloseLinks" 
+                HREF="javascript: hideGuide();"><%= menuBundle.getString("lb_close") %></A></TD>
+            </TR>
+        </TABLE>
+    </TD>
+    </TR>
+</TABLE>
+
+</TD>
+</TR>
+</TABLE>
+
+</DIV>
+<!-- End database2 layer -->
+<%}%>
+
+    

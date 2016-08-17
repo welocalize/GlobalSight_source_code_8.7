@@ -1,0 +1,101 @@
+<%@ taglib uri="/WEB-INF/tlds/globalsight.tld" prefix="amb" %>
+<%@ page import="java.util.*,
+        com.globalsight.everest.webapp.pagehandler.projects.workflows.JobSearchConstants,
+        com.globalsight.everest.servlet.util.SessionManager,
+        com.globalsight.everest.jobhandler.Job,
+        com.globalsight.everest.servlet.util.ServerProxy,
+        com.globalsight.everest.jobhandler.JobHandlerLocal,
+        com.globalsight.ling.common.URLDecoder,
+	java.util.ArrayList,
+	java.util.StringTokenizer,
+	java.util.ResourceBundle,
+	javax.servlet.http.Cookie"
+ %>
+<%
+    String jobsPendingUrl = LinkHelper.getWebActivityURL(request, "jobsPending") + 
+                            "&searchType=stateOnly";
+    String jobsReadyUrl =  LinkHelper.getWebActivityURL(request, "jobsReady") + 
+                            "&searchType=stateOnly";
+    String jobsInProgressUrl =  LinkHelper.getWebActivityURL(request, "jobsInProgress") + 
+                            "&searchType=stateOnly";
+    String jobsLocalizedUrl =  LinkHelper.getWebActivityURL(request, "jobsLocalized") + 
+                            "&searchType=stateOnly";
+    String jobsExportedUrl =  LinkHelper.getWebActivityURL(request, "jobsExported") + 
+                            "&searchType=stateOnly";
+    String jobsArchivedUrl =  LinkHelper.getWebActivityURL(request, "jobsArchived") + 
+                            "&searchType=stateOnly";
+    String jobsAllStatusUrl =  LinkHelper.getWebActivityURL(request, "jobsAll") + 
+                            "&searchType=stateOnly";                           
+	String allJobGroupsUrl =  LinkHelper.getWebActivityURL(request, "jobGroups") + 
+                            "&searchType=stateOnly";
+    // Get most recently used jobs
+    String mruJobsStr = (String)session.getAttribute(JobSearchConstants.MRU_JOBS);
+    ArrayList mruJobs = new ArrayList();
+    if (mruJobsStr != null)
+    {
+        StringTokenizer st = new StringTokenizer(mruJobsStr, "|");
+        while (st.hasMoreTokens())
+        {
+            mruJobs.add(st.nextToken());
+        }
+    }
+    
+%>
+
+//////////////// My Jobs menu ///////////////////
+var myJobsMenu = new WebFXMenu;
+
+// search job
+
+// last job
+
+<amb:permission name="<%=Permission.JOBS_VIEW%>" >
+    myJobsMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_pending")%>", "javascript:goToUrl('<%=jobsPendingUrl%>');", ""));
+
+    myJobsMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_ready")%>", "javascript:goToUrl('<%=jobsReadyUrl%>');", ""));
+
+    myJobsMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_inprogress")%>", "javascript:goToUrl('<%=jobsInProgressUrl%>');", ""));
+
+    myJobsMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_localized")%>", "javascript:goToUrl('<%=jobsLocalizedUrl%>');", ""));
+
+    myJobsMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_exported")%>", "javascript:goToUrl('<%=jobsExportedUrl%>');", ""));
+
+    myJobsMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_archived")%>", "javascript:goToUrl('<%=jobsArchivedUrl%>');", ""));
+
+    myJobsMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_all_jobs")%>", "javascript:goToUrl('<%=jobsAllStatusUrl%>');", ""));//modify for GBS-2875
+</amb:permission>
+
+<amb:permission name="<%=Permission.JOBS_GROUP%>" >
+    myJobsMenu.add(new WebFXMenuItem("<%=mainMenuBundle.getString("lb_all_groups")%>", "javascript:goToUrl('<%=allJobGroupsUrl%>');", ""));
+</amb:permission> 
+<%
+try
+{
+    if (mruJobs.size() != 0)
+    {
+%>
+    myJobsMenu.add(new WebFXMenuSeparator());
+<%
+        for (int i = 0; i < mruJobs.size(); i++)
+        {
+            String mrujob = (String)mruJobs.get(i);
+            int idx = mrujob.indexOf(":");
+            String jobid = mrujob.substring(0, idx);
+            long theMruJobId = Long.parseLong(jobid);
+            Job theMruJob = ServerProxy.getJobHandler().getJobById(theMruJobId);
+            if(theMruJob == null)
+            	continue;
+            String jobname = mrujob.substring(idx+1);
+            String label = jobname + " (" + jobid + ")";
+            String jurl = new String("/globalsight/ControlServlet?linkName=jobDetails&pageName=DTLS&jobId=" + jobid);
+%>
+        myJobsMenu.add(new WebFXMenuItem("<%=label%>", "javascript:goToUrl('<%=jurl%>');", ""));
+<%
+        }
+    }
+}
+catch(Exception e)
+{
+    // Cookie from client is corrupted, just ignore it.
+}
+%>

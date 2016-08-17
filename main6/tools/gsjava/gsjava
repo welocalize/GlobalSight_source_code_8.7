@@ -1,0 +1,50 @@
+#!/bin/sh
+
+set -e
+
+# A wrapper that sets up a stand-alone environment for GS code.
+
+# If the script resides in an install tree, it will use it.
+# If the script resides in a source tree, first run
+# ant write-run-classpath -Dgs.home=<path to globalsight.ear>
+
+DIR=$(dirname $0)
+
+# Setting GS_JAVA allows you to run an alternate command, eg gsjdb
+if [ "x$GS_JAVA" = x ]; then
+    GS_JAVA=java
+fi
+
+if [ -e "$DIR/jboss_server/server/default/deploy/globalsight.ear/lib/classes/properties/envoy_generated.properties" ]; then
+    GS_JBOSS=$DIR
+    LIB="$GS_JBOSS/jboss_server/server/default/deploy/globalsight.ear/lib"
+    # - this $DIR for log4j.properties
+    # - globalsight.ear/lib/classes for properties, resources, and patches
+    # - some specific jars that must be loaded before other versions
+    # - globalsight.ear/lib/* for most libs (GS and third-party)
+    # - jboss_server/server/default/lib/* for app server libs (eg servlet)
+    CLASSPATH="\
+$GS_CLASSPATH_PRE:\
+$GS_JBOSS:\
+$LIB/classes:\
+$LIB/hibernate/dom4j-1.6.1.jar:\
+$LIB/jaxen-1.1-beta-4.jar:\
+$LIB/*:\
+$GS_JBOSS/jboss_server/server/default/lib/*:\
+$CLASSPATH"
+elif [ -e "$DIR/../../../main6/tools/build/build.xml" ]; then
+    GS_SOURCE=$DIR/../../..
+    if ! [ -e "$GS_SOURCE/main6/tools/build/run.classpath.sh" ]; then
+        ant -buildfile "$GS_SOURCE/main6/tools/build/build.xml" write-run-classpath > /dev/null
+    fi;
+    # sets RUNCLASSPATH
+    source $GS_SOURCE/main6/tools/build/run.classpath.sh
+    CLASSPATH="$GS_CLASSPATH_PRE:$DIR:$RUNCLASSPATH:$CLASSPATH"
+else
+    echo 'gsjava not located in a source tree or an install!!' >&2
+    exit 1
+fi
+
+export CLASSPATH
+
+"$GS_JAVA" "$@"

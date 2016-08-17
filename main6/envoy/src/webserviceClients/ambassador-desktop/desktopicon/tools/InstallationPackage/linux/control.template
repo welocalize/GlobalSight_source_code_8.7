@@ -1,0 +1,9 @@
+Package: desktopicon
+Priority: extra
+Section: Office
+Installed-Size: 7764
+Maintainer: GlobalSight <WelocalizeAdmin@domain.com>
+Architecture: i386
+Version: %version%
+Depends: 
+Description: Desktop tool that simplify does tasks such as submitting and retrieving projects from GlobalSight

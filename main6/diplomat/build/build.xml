@@ -1,0 +1,27 @@
+<!-- *************************************************************** -->
+<!-- *                                                             * -->
+<!-- *                     CXE Build file                          * -->
+<!-- *                                                             * -->
+<!-- *************************************************************** -->
+<project name="CXE" default="build" basedir="">
+    <property name="source" value="../../diplomat/dev/src/java" />
+
+	<target name="build">
+	        <echo message="*** Copying CXE Resources ***"/>
+		<copy todir="${serverclassesDest}/com/globalsight/resources">
+		    <fileset dir="${source}/com/globalsight/resources" />
+		</copy>
+        <copy todir="${globalsight_home}/globalsight-web.war/cxe/jsp">
+            <fileset dir="../../diplomat/dev/src/web-doc/jsp/cxe/jsp" />
+		</copy>
+        <copy todir="${globalsight_home}/globalsight-web.war/cxe/html">
+            <fileset dir="../../diplomat/dev/src/web-doc/html" />
+		</copy>
+        <copy todir="${serverclassesDest}/properties">
+            <fileset dir="../../diplomat/dev/src/config">
+                <include name="*.*" />
+            </fileset>
+            <fileset dir="../../diplomat/dev/src/config/properties" />
+		</copy>
+	</target>
+</project>

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.globalsight.cxe.entity.filterconfiguration.InddFilter"
+		table="indd_filter">
+		<id name="id" column="ID" type="long">
+			<generator class="native" />
+		</id>
+		<property name="companyId" column="COMPANY_ID" type="long"
+			not-null="true" unique="false" />
+		<property name="filterName" length="255" column="FILTER_NAME"
+			type="string" not-null="true" unique="false" />
+		<property name="filterDescription" length="4000"
+			column="FILTER_DESCRIPTION" type="string" not-null="false" unique="false" />
+		<property name="translateHiddenLayer" column="TRANSLATE_HIDDEN_LAYER"
+			type="yes_no" not-null="true" />
+		<property name="translateMasterLayer" column="TRANSLATE_MASTER_LAYER"
+			type="yes_no" not-null="true" />
+		<property name="translateFileInfo" column="TRANSLATE_FILE_INFO"
+			type="yes_no" not-null="true" />
+		<property name="translateHyperlinks" column="TRANSLATE_HYPERLINKS"
+			type="yes_no" not-null="true" />
+		<property name="translateHiddenCondText" column="TRANSLATE_HIDDEN_CONDTEXT"
+			type="yes_no" not-null="true" />
+		<property name="skipTrackingKerning" column="SKIP_TRACKING_KERNING"
+			type="yes_no" not-null="true" />
+		<property name="extractLineBreak" column="EXTRACT_LINE_BREAK"
+			type="yes_no" not-null="true" />
+		<property name="replaceNonbreakingSpace" column="REPLACE_NONBREAKING_SPACE"
+			type="yes_no" not-null="true" />
+
+	</class>
+</hibernate-mapping>
